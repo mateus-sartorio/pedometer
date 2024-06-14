@@ -92,10 +92,10 @@ int main(void) {
 #else
         // Blinking both LEDs at the same time: -- **
         GPIOE->DOUT |= LED1 | LED2;
-        Delay(10 * DELAYVAL);
+        Delay(DELAYVAL);
 
         GPIOE->DOUT &= ~(LED1 | LED2);
-        Delay(10 * DELAYVAL);
+        Delay(DELAYVAL);
 #endif
     }
 }

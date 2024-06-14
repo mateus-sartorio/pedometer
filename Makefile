@@ -41,7 +41,6 @@
 # Main parameters                                                             #
 ###############################################################################
 
-
 #
 # Program name
 #
@@ -77,10 +76,12 @@ PART=EFM32GG990F1024
 # Used to find correct CMSIS include file
 PARTCLASSCMSIS=EFM32GG
 
+SRCDIR=src
+
 #
 # Source files
 #
-SRCFILES=${wildcard *.c}
+SRCFILES=${wildcard ${SRCDIR}/*.c}
 #SRCFILES= main.c
 
 #
@@ -189,12 +190,14 @@ endif
 #
 # Folder for object files
 #
-OBJDIR=gcc
+OBJDIR=build
+
+$(shell mkdir -p ${OBJDIR})
 
 #
 # Object files
 #
-OBJFILES=${addprefix ${OBJDIR}/,${SRCFILES:.c=.o}}
+OBJFILES=${addprefix ${OBJDIR}/,${SRCFILES:${SRCDIR}/%.c=%.o}}
 
 
 #
@@ -545,7 +548,7 @@ GDBINIT=${OBJDIR}/gdbinit
 # Linker script
 #
 #LINKERSCRIPT=${PROGNAME}.ld
-LINKERSCRIPT=efm32gg.ld
+LINKERSCRIPT=linker/efm32gg.ld
 #LINKERSCRIPT=${shell echo ${PART}| tr A-Z a-z}.ld
 
 #
@@ -561,7 +564,7 @@ ENTRY=Reset_Handler
 #
 # The rule for building the object file from each C source file.
 #
-${OBJDIR}/%.o: %.c
+${OBJDIR}/%.o: ${SRCDIR}/%.c
 	@echo   "Compiling           ${<}"
 	${CC} -c ${CFLAGS} ${SPECFLAGS} -D${OBJDIR} ${DEPFLAGS} -o ${@} ${<}
 
