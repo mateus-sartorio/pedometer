@@ -1,7 +1,7 @@
 /**
  * @file    main.c
- * @brief   Simple LED Blink Demo for EFM32GG_STK3700
- * @version 1.1
+ * @brief   Pedometro with EFM32GG_STK3700
+ * @version 1.0
  *
  * @note    Just blinks the LEDs of the STK3700
  *
@@ -9,7 +9,7 @@
  *
  * @note    It uses a primitive delay mechanism. Do not use it.
  *
- * @author  Hans
+ * @author  Mateus Sartorio
  * @date    01/09/2018
  */
 
@@ -32,11 +32,11 @@
 
 /// Default delay value.
 #define DELAYVAL 9
+
 /**
  * @brief  Quick and dirty delay function
  * @note   Do not use it in production code
  */
-
 void Delay(uint32_t delay) {
     volatile uint32_t counter;
     int i;
@@ -57,7 +57,6 @@ void Delay(uint32_t delay) {
  * @note   HFPERCLK  = HFCLK
 
  */
-
 int main(void) {
     /// Shortcut to Porte E: Pointer to GPIO Port E registers
     GPIO_P_TypeDef *const GPIOE = &(GPIO->P[4]);  // GPIOE

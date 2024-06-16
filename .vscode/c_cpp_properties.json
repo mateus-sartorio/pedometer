@@ -3,7 +3,7 @@
         {
             "name": "Embedded ARM",
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder}/include",
                 "../Gecko_SDK/platform/Device/SiliconLabs/EFM32GG/Include",
                 "../Gecko_SDK//platform/CMSIS"
             ],
