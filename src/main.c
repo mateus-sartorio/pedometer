@@ -17,84 +17,43 @@
 
 #include "em_device.h"
 
-/**
- * @brief       BIT macro
- *              Defines a constant (hopefully) with a bit 1 in the N position
- * @param       N : Bit index with bit 0 the Least Significant Bit
- */
+#define true 1
+#define false 0
+
 #define BIT(N) (1U << (N))
 
-///@{
-/// LEDs are on Port E
 #define LED1 BIT(2)
 #define LED2 BIT(3)
-///@}
 
-/// Default delay value.
 #define DELAYVAL 9
 
-/**
- * @brief  Quick and dirty delay function
- * @note   Do not use it in production code
- */
-void Delay(uint32_t delay) {
+void delay(uint32_t delay_ammount) {
     volatile uint32_t counter;
-    int i;
 
-    for (i = 0; i < delay; i++) {
+    for(int i = 0; i < delay_ammount; i++) {
         counter = 100000;
-        while (counter)
+        while(counter) {
             counter--;
+        }
     }
 }
 
-/**
- * @brief  Main function
- *
- * @note   Using default clock configuration
- * @note   HFCLK     = HFRCO 14 MHz
- * @note   HFCORECLK = HFCLK
- * @note   HFPERCLK  = HFCLK
-
- */
 int main(void) {
-    /// Shortcut to Porte E: Pointer to GPIO Port E registers
-    GPIO_P_TypeDef *const GPIOE = &(GPIO->P[4]);  // GPIOE
+    GPIO_P_TypeDef* const GPIOE = &(GPIO->P[4]);
 
-    /* Enable Clock for GPIO */
-    CMU->HFPERCLKDIV |= CMU_HFPERCLKDIV_HFPERCLKEN;  // Enable HFPERCLK
-    CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_GPIO;        // Enable HFPERCKL for GPIO
+    CMU->HFPERCLKDIV |= CMU_HFPERCLKDIV_HFPERCLKEN;
+    CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_GPIO;
 
-    /* Configure Pins in GPIOE */
-#if 1
-    // Using two steps
-    GPIOE->MODEL &= ~(_GPIO_P_MODEL_MODE2_MASK | _GPIO_P_MODEL_MODE3_MASK);       // Clear bits
-    GPIOE->MODEL |= (GPIO_P_MODEL_MODE2_PUSHPULL | GPIO_P_MODEL_MODE3_PUSHPULL);  // Set bits
-#else
-    // Using one step
-    GPIOE->MODEL = (GPIOE->MODEL & ~(_GPIO_P_MODEL_MODE2_MASK | _GPIO_P_MODEL_MODE3_MASK)) | (GPIO_P_MODEL_MODE2_PUSHPULL | GPIO_P_MODEL_MODE3_PUSHPULL);
-#endif
+    GPIOE->MODEL &= ~(_GPIO_P_MODEL_MODE2_MASK | _GPIO_P_MODEL_MODE3_MASK);
+    GPIOE->MODEL |= (GPIO_P_MODEL_MODE2_PUSHPULL | GPIO_P_MODEL_MODE3_PUSHPULL);
 
-    /* Initial values for LEDs */
-    GPIOE->DOUT &= ~(LED1 | LED2);  // Turn Off LEDs
+    GPIOE->DOUT &= ~(LED1 | LED2);
 
-    /* Blink loop */
-    while (1) {
-        // This is a trick to comment out a piece of code.
-#if 0
-        // Alternating LEDs: -- *- ** *-
-        GPIOE->DOUT ^= LED1;
-        Delay(DELAYVAL);
-
-        GPIOE->DOUT ^= LED2;
-        Delay(DELAYVAL);
-#else
-        // Blinking both LEDs at the same time: -- **
+    while(true) {
         GPIOE->DOUT |= LED1 | LED2;
-        Delay(DELAYVAL);
+        delay(DELAYVAL);
 
         GPIOE->DOUT &= ~(LED1 | LED2);
-        Delay(DELAYVAL);
-#endif
+        delay(DELAYVAL);
     }
 }
