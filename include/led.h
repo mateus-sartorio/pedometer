@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#define BIT(N) (1U << (N))
+#include "macros.h"
 
 #define LED1 BIT(2)
 #define LED2 BIT(3)

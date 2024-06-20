@@ -14,6 +14,7 @@
  */
 #include <stdint.h>
 
+#include "../include/button.h"
 #include "../include/led.h"
 #include "clock_efm32gg.h"
 #include "em_device.h"
@@ -32,29 +33,29 @@
 
 volatile uint32_t tick_counter = 0;
 
-void SysTick_Handler(void) {
-    static int counter = 0;
-    static int8_t state = 0;
+// void SysTick_Handler(void) {
+//     static int counter = 0;
+//     static int8_t state = 0;
 
-    if(counter != 0) {
-        counter--;
-    } else {
-        switch(state) {
-            case 0:
-                LED_Toggle(LED1);
-                state = 1;
-                break;
-            case 1:
-                LED_Toggle(LED2);
-                state = 0;
-                break;
-            default:
-                break;
-        }
+//     if(counter != 0) {
+//         counter--;
+//     } else {
+//         switch(state) {
+//             case 0:
+//                 LED_Toggle(LED1);
+//                 state = 1;
+//                 break;
+//             case 1:
+//                 LED_Toggle(LED2);
+//                 state = 0;
+//                 break;
+//             default:
+//                 break;
+//         }
 
-        counter = SOFTDIVIDER - 1;
-    }
-}
+//         counter = SOFTDIVIDER - 1;
+//     }
+// }
 
 void Delay(uint32_t delay_ammount) {
     volatile uint32_t initial_value = tick_counter;
@@ -71,13 +72,27 @@ void DelayPulses(uint32_t delay) {
 }
 
 int main(void) {
+    uint32_t button;
+
     (void)SystemCoreClockSet(CLOCK_HFXO, 1, 1);
 
     LED_Init(LED1 | LED2);
 
-    SysTick_Config(SystemCoreClock / SYSTICKDIVIDER);
+    // SysTick_Config(SystemCoreClock / SYSTICKDIVIDER);
 
-    __enable_irq();
+    // __enable_irq();
 
-    while(true);
+    Button_Init(BUTTON1 | BUTTON2);
+
+    while(true) {
+        button = Button_ReadReleased();
+
+        if(button & BUTTON1) {
+            LED_Toggle(LED1);
+        }
+
+        if(button & BUTTON2) {
+            LED_Toggle(LED2);
+        }
+    }
 }
