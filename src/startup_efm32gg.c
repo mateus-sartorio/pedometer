@@ -121,7 +121,7 @@ extern int  __START(void) __attribute__((noreturn));    /* main entry point */
   STOP Macro. Can be used when stack fails
  *----------------------------------------------------------------------------*/
 #define __STOP() \
-    while (1) {  \
+    while(1) {   \
     }
 
 /*----------------------------------------------------------------------------
@@ -139,13 +139,15 @@ extern void main(void);
 #ifndef __STACK_SIZE
 #define __STACK_SIZE 0x00000400
 #endif
-static uint8_t stack[__STACK_SIZE] __attribute__((aligned(8), used, section(".stack")));
+static uint8_t stack[__STACK_SIZE]
+    __attribute__((aligned(8), used, section(".stack")));
 
 #ifndef __HEAP_SIZE
 #define __HEAP_SIZE 0x00000C00
 #endif
 #if __HEAP_SIZE > 0
-static uint8_t heap[__HEAP_SIZE] __attribute__((aligned(8), used, section(".heap")));
+static uint8_t heap[__HEAP_SIZE]
+    __attribute__((aligned(8), used, section(".heap")));
 #endif
 
 /*----------------------------------------------------------------------------
@@ -282,11 +284,11 @@ void __attribute__((weak, naked)) Reset_Handler(void) {
     SystemInit();
 #endif
 
-    /*  Firstly it copies data from read only memory to RAM. There are two schemes
-     *  to copy. One can copy more than one sections. Another can only copy
-     *  one section.  The former scheme needs more instructions and read-only
-     *  data to implement than the latter.
-     *  Macro __STARTUP_COPY_MULTIPLE is used to choose between two schemes.  */
+    /*  Firstly it copies data from read only memory to RAM. There are two
+     * schemes to copy. One can copy more than one sections. Another can only
+     * copy one section.  The former scheme needs more instructions and
+     * read-only data to implement than the latter. Macro
+     * __STARTUP_COPY_MULTIPLE is used to choose between two schemes.  */
 
 #ifdef __STARTUP_COPY_MULTIPLE
     /*  Multiple sections scheme.
@@ -301,10 +303,10 @@ void __attribute__((weak, naked)) Reset_Handler(void) {
      */
     pTable = &__copy_table_start__;
 
-    for (; pTable < &__copy_table_end__; pTable = pTable + 3) {
+    for(; pTable < &__copy_table_end__; pTable = pTable + 3) {
         pSrc = (uint32_t *)*(pTable + 0);
         pDest = (uint32_t *)*(pTable + 1);
-        for (; pDest < (uint32_t *)(*(pTable + 1) + *(pTable + 2));) {
+        for(; pDest < (uint32_t *)(*(pTable + 1) + *(pTable + 2));) {
             *pDest++ = *pSrc++;
         }
     }
@@ -321,7 +323,7 @@ void __attribute__((weak, naked)) Reset_Handler(void) {
     pSrc = &__etext;
     pDest = &__data_start__;
 
-    for (; pDest < &__data_end__;) {
+    for(; pDest < &__data_end__;) {
         *pDest++ = *pSrc++;
     }
 #endif /*__STARTUP_COPY_MULTIPLE */
@@ -346,9 +348,9 @@ void __attribute__((weak, naked)) Reset_Handler(void) {
      */
     pTable = &__zero_table_start__;
 
-    for (; pTable < &__zero_table_end__; pTable = pTable + 2) {
+    for(; pTable < &__zero_table_end__; pTable = pTable + 2) {
         pDest = (uint32_t *)*(pTable + 0);
-        for (; pDest < (uint32_t *)(*(pTable + 0) + *(pTable + 1));) {
+        for(; pDest < (uint32_t *)(*(pTable + 0) + *(pTable + 1));) {
             *pDest++ = 0;
         }
     }
@@ -363,7 +365,7 @@ void __attribute__((weak, naked)) Reset_Handler(void) {
      */
     pDest = &__bss_start__;
 
-    for (; pDest < &__bss_end__;) {
+    for(; pDest < &__bss_end__;) {
         *pDest++ = 0ul;
     }
 #endif /* __STARTUP_CLEAR_BSS_MULTIPLE || __STARTUP_CLEAR_BSS */
@@ -376,14 +378,16 @@ void __attribute__((weak, naked)) Reset_Handler(void) {
     /*
      * To used the FPU
      *     Specifify the -mfpu=fpv4-sp-d16 flag,
-     *     Initialize FPU by enabling coprocessors in the CPAR register, as below
+     *     Initialize FPU by enabling coprocessors in the CPAR register, as
+     * below
      *
      * The compiler can use two software interfaces for the FPU:
      *      -mfloat-abi=hard
      *       The FPU operations are accessed thru the FPU registers
      *      -mfloat-abi=softfp
      *       The FPU operations are accessed thru the softfp calls,
-     *       mantaining compability with  software that uses software floating point.
+     *       mantaining compability with  software that uses software floating
+     * point.
      *
      * The Cortex M3 does not have a FPU!
      * The Cortex M4 can have a single precision FPU
@@ -410,19 +414,15 @@ void __attribute__((weak, naked)) Reset_Handler(void) {
   Dummy SystemInit. Only used when there is no other SystemInit defined
  *----------------------------------------------------------------------------*/
 
-void SystemInit(void) {
-}
+void SystemInit(void) {}
 
 /*----------------------------------------------------------------------------
   Dummy _main. Only used for library initialization.
  *----------------------------------------------------------------------------*/
 
-void _main(void) {
-}
+void _main(void) {}
 
 /*----------------------------------------------------------------------------
   Default Handler for Exceptions / Interrupts
  *----------------------------------------------------------------------------*/
-void Default_Handler(void) {
-    __STOP();
-}
+void Default_Handler(void) { __STOP(); }
