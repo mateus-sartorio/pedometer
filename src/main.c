@@ -12,37 +12,75 @@
  * @author  Mateus Sartorio
  * @date    01/09/2018
  */
+#include <ctype.h>
 #include <stdint.h>
 
 #include "../include/button.h"
 #include "../include/led.h"
-#include "clock_efm32gg.h"
+#include "../include/uart.h"
+#include "clock_efm32gg_ext.h"
 #include "em_device.h"
 
 #define true 1
 #define false 0
 
-void button_callback(uint32_t mask) {
-    if(Button_ReadReleased()) {
-        if(BUTTON1 & mask) {
-            LED_Toggle(LED1);
-        } else if(BUTTON2 & mask) {
-            LED_Toggle(LED2);
-        }
+const int TickDivisor = 1000;
+
+void SysTick_Handler(void) {
+    static int counter = 0;
+
+    if(counter == 0) {
+        counter = TickDivisor;
+        LED_Toggle(LED1);
     }
+
+    counter--;
 }
 
 int main(void) {
+    ClockConfiguration_t clock_config;
+
     LED_Init(LED1 | LED2);
 
-    Button_Init(BUTTON1 | BUTTON2);
-    Button_SetCallback(button_callback);
-
-    __enable_irq();
+    (void)SystemCoreClockSet(CLOCK_HFXO, 1, 1);
+    ClockGetConfiguration(&clock_config);
 
     LED_Write(0, LED1 | LED2);
 
+    SysTick_Config(SystemCoreClock / TickDivisor);
+
+    UART_Init();
+
+    UART_SendString("\r\n\n\nSPACE toggle change case\n\r");
+
+    int cntchar = 0;
+    unsigned ch = '*';
+    int changecase = 0;
+
     while(true) {
-        __WFI();
+        // if((ch = UART_GetCharNoWait()) != 0) {
+        //     LED_Toggle(LED2);
+        // } else {
+        //     continue;
+        // }
+
+        // if(ch == ' ') {
+        //     changecase = !changecase;
+        // }
+
+        // if(changecase) {
+        //     if(isupper(ch)) {
+        //         ch = tolower(ch);
+        //     } else if(islower(ch)) {
+        //         ch = toupper(ch);
+        //     }
+        // }
+
+        // if((cntchar++ % 80) == 0) {
+        //     UART_SendChar('\n');
+        //     UART_SendChar('\r');
+        // }
+
+        UART_SendChar(ch);
     }
 }

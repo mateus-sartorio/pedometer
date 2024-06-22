@@ -4,6 +4,9 @@
         "*.cs": "csharp",
         "compare": "cpp",
         "em_device.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "uart.h": "c",
+        "led.h": "c",
+        "cstdlib": "c"
     }
 }
