@@ -16,71 +16,67 @@
 #include <stdint.h>
 
 #include "../include/button.h"
+#include "../include/lcd.h"
 #include "../include/led.h"
 #include "../include/uart.h"
 #include "clock_efm32gg_ext.h"
 #include "em_device.h"
 
-#define true 1
-#define false 0
+#define DELAYVAL 100
 
-const int TickDivisor = 1000;
+void Delay(uint32_t delay) {
+    volatile uint32_t counter;
+    int i;
 
-void SysTick_Handler(void) {
-    static int counter = 0;
-
-    if(counter == 0) {
-        counter = TickDivisor;
-        LED_Toggle(LED1);
+    for(i = 0; i < delay; i++) {
+        counter = 10000;
+        while(counter) counter--;
     }
+}
 
-    counter--;
+void WriteMultiple(uint8_t ch) {
+    int pos;
+
+    for(pos = 1; pos <= 11; pos++) LCD_WriteChar(ch, pos);
 }
 
 int main(void) {
-    ClockConfiguration_t clock_config;
+    static char* string =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<>:,.;"
+        "abcdefghijklmnopqrstuvwzyz!@#$%*()[]";
 
+    static char* numstring = "0123456789";
+
+    char* s = string;
+    char* n = numstring;
+
+    /* Configure Pins in GPIOE */
     LED_Init(LED1 | LED2);
 
-    (void)SystemCoreClockSet(CLOCK_HFXO, 1, 1);
-    ClockGetConfiguration(&clock_config);
+    /* Configure LCD */
+    LCD_Init();
 
-    LED_Write(0, LED1 | LED2);
+    LCD_SetAll();
+    Delay(DELAYVAL);
 
-    SysTick_Config(SystemCoreClock / TickDivisor);
+    LCD_ClearAll();
+    Delay(DELAYVAL);
 
-    UART_Init();
+    /* Blink loop */
+    while(1) {
+        Delay(DELAYVAL);
+        LED_Toggle(LED1);  // Toggle LED1
+        LCD_WriteAlphanumericDisplay(s++);
+        if(*s == '\0')
+            s = string;
+        LCD_WriteNumericDisplay(n++);
+        if(*n == '\0')
+            n = numstring;
 
-    UART_SendString("\r\n\n\nSPACE toggle change case\n\r");
+        Delay(DELAYVAL);
+        LED_Toggle(LED2);  // Toggle LED2
 
-    int cntchar = 0;
-    unsigned ch = '*';
-    int changecase = 0;
-
-    while(true) {
-        // if((ch = UART_GetCharNoWait()) != 0) {
-        //     LED_Toggle(LED2);
-        // } else {
-        //     continue;
-        // }
-
-        // if(ch == ' ') {
-        //     changecase = !changecase;
-        // }
-
-        // if(changecase) {
-        //     if(isupper(ch)) {
-        //         ch = tolower(ch);
-        //     } else if(islower(ch)) {
-        //         ch = toupper(ch);
-        //     }
-        // }
-
-        // if((cntchar++ % 80) == 0) {
-        //     UART_SendChar('\n');
-        //     UART_SendChar('\r');
-        // }
-
-        UART_SendChar(ch);
+        Delay(DELAYVAL);
+        LED_Write(0, LED1 | LED2);  // Turn On All LEDs
     }
 }
