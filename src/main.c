@@ -20,66 +20,11 @@
 #include "../include/led.h"
 #include "em_device.h"
 #include "../include/i2cmaster.h"
+#include "../include/utils.h"
 
 #define DELAYVAL 100
 #define MPU_ADDR 0x68
 #define VALIDATOR 0x68
-
-void reverse(char str[], int length)
-{
-    int start = 0;
-    int end = length - 1;
-    while (start < end)
-    {
-        char temp = str[start];
-        str[start] = str[end];
-        str[end] = temp;
-        start++;
-        end--;
-    }
-}
-
-char *itoa(int num, char *str, int base)
-{
-    int i = 0;
-    int isNegative = 0;
-
-    // Handle 0 explicitly, otherwise empty string is printed for 0
-    if (num == 0)
-    {
-        str[i++] = '0';
-        str[i] = '\0';
-        return str;
-    }
-
-    // In standard itoa(), negative numbers are only handled if base is 10
-    if (num < 0 && base == 10)
-    {
-        isNegative = 1;
-        num = -num;
-    }
-
-    // Process individual digits
-    while (num != 0)
-    {
-        int rem = num % base;
-        str[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
-        num = num / base;
-    }
-
-    // If number is negative, append '-'
-    if (isNegative)
-    {
-        str[i++] = '-';
-    }
-
-    str[i] = '\0'; // Append string terminator
-
-    // Reverse the string
-    reverse(str, i);
-
-    return str;
-}
 
 void Delay(uint32_t delay)
 {
