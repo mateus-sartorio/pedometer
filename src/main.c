@@ -23,6 +23,7 @@
 
 #define DELAYVAL 100
 #define MPU_ADDR 0x68
+#define VALIDATOR 0x68
 
 void reverse(char str[], int length)
 {
@@ -89,7 +90,9 @@ void Delay(uint32_t delay)
     {
         counter = 10000;
         while (counter)
+        {
             counter--;
+        }
     }
 }
 
@@ -98,15 +101,13 @@ void WriteMultiple(uint8_t ch)
     int pos;
 
     for (pos = 1; pos <= 11; pos++)
+    {
         LCD_WriteChar(ch, pos);
+    }
 }
 
 int main(void)
 {
-    uint8_t data[4];
-    data[0] = 0x12;
-    data[1] = 0xFE;
-
     /* Configure Pins in GPIOE */
     LED_Init(LED1 | LED2);
 
@@ -120,7 +121,11 @@ int main(void)
     Delay(DELAYVAL);
 
     int rc = I2CMaster_Init(I2C1, 100, 0);
-    rc = I2CMaster_Send(I2C1, MPU_ADDR, data, 2);
+
+    uint8_t data[2];
+    data[0] = 0x6B; // Registrador PWR_MGMT_1
+    data[1] = 0x00; // Valor para acordar o MPU6050
+    rc = I2CMaster_SendStart(I2C1, VALIDATOR, data, 2);
 
     char string[10];
     itoa(rc, string, 10);
