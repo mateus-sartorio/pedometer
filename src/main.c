@@ -53,17 +53,17 @@ void WriteMultiple(uint8_t ch)
 
 int main(void)
 {
-    /* Configure Pins in GPIOE */
-    LED_Init(LED1 | LED2);
+    // /* Configure Pins in GPIOE */
+    // LED_Init(LED1 | LED2);
 
-    /* Configure LCD */
-    LCD_Init();
+    // /* Configure LCD */
+    // LCD_Init();
 
-    LCD_SetAll();
-    Delay(DELAYVAL);
+    // LCD_SetAll();
+    // Delay(DELAYVAL);
 
-    LCD_ClearAll();
-    Delay(DELAYVAL);
+    // LCD_ClearAll();
+    // Delay(DELAYVAL);
 
     int rc = I2CMaster_Init(I2C1, 100, 0);
 
@@ -72,27 +72,27 @@ int main(void)
     data[1] = 0x00; // Valor para acordar o MPU6050
     rc = I2CMaster_SendStart(I2C1, VALIDATOR, data, 2);
 
-    char string[10];
-    itoa(rc, string, 10);
-    char *s = string;
+    // char string[10];
+    // itoa(rc, string, 10);
+    // char *s = string;
 
     /* Blink loop */
     while (1)
     {
-        Delay(DELAYVAL);
-        LED_Toggle(LED1); // Toggle LED1
-        LCD_WriteAlphanumericDisplay(s++);
+        // Delay(DELAYVAL);
+        // LED_Toggle(LED1); // Toggle LED1
+        // LCD_WriteAlphanumericDisplay(s++);
 
-        if (*s == '\0')
-        {
-            s = string;
-        }
+        // if (*s == '\0')
+        // {
+        //     s = string;
+        // }
 
-        Delay(DELAYVAL);
-        LED_Toggle(LED2); // Toggle LED2
+        // Delay(DELAYVAL);
+        // LED_Toggle(LED2); // Toggle LED2
 
-        Delay(DELAYVAL);
-        LED_Write(0, LED1 | LED2); // Turn On All LEDs
+        // Delay(DELAYVAL);
+        // LED_Write(0, LED1 | LED2); // Turn On All LEDs
 
         // rc = I2CMaster_Send(I2C1, VALIDADDR, data, 1);
         // if(rc < 0) {

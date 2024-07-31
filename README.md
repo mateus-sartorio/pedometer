@@ -4,6 +4,10 @@ Pedômetro é um instrumento que conta o número de passadas de uma pessoa. Exis
 
 Trabalho desenvolvido para a disciplina de Sistemas Embarcados II do curso de bacharelado em Engenharia de Computação pela Universidade Federal do Espírito Santo.
 
+# Comando
+
+unset PYTHONHOME && unset PYTHONPATH && export PYTHONHOME=$(pyenv root)/versions/3.8.19
+
 ## Esquemático
 
 ![esquemático](./assets/images/esquematico.jpg)
