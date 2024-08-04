@@ -9,7 +9,7 @@
  */
 
 #include "../include/i2cmaster.h"
-#include "clock_efm32gg_ext.h"
+#include "../include/clock_efm32gg_ext.h"
 #include "em_device.h"
 #include <stdint.h>
 

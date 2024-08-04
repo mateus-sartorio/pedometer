@@ -63,7 +63,7 @@
 #define EFM32_HFRCO_MAX_FREQ (28000000UL)
 
 /* Do not define variable if HF crystal oscillator not present */
-#if(EFM32_HFXO_FREQ > 0)
+#if (EFM32_HFXO_FREQ > 0)
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 /** System HFXO clock. */
 static uint32_t SystemHFXOClock = EFM32_HFXO_FREQ;
@@ -75,7 +75,7 @@ static uint32_t SystemHFXOClock = EFM32_HFXO_FREQ;
 #endif
 
 /* Do not define variable if LF crystal oscillator not present */
-#if(EFM32_LFXO_FREQ > 0)
+#if (EFM32_LFXO_FREQ > 0)
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 /** System LFXO clock. */
 static uint32_t SystemLFXOClock = EFM32_LFXO_FREQ;
@@ -166,69 +166,69 @@ uint32_t SystemMaxCoreClockGet(void) {
 uint32_t SystemHFClockGet(void) {
     uint32_t ret;
 
-    switch(CMU->STATUS & (CMU_STATUS_HFRCOSEL | CMU_STATUS_HFXOSEL |
-                          CMU_STATUS_LFRCOSEL | CMU_STATUS_LFXOSEL)) {
-        case CMU_STATUS_LFXOSEL:
-#if(EFM32_LFXO_FREQ > 0)
-            ret = SystemLFXOClock;
+    switch (CMU->STATUS & (CMU_STATUS_HFRCOSEL | CMU_STATUS_HFXOSEL |
+                           CMU_STATUS_LFRCOSEL | CMU_STATUS_LFXOSEL)) {
+    case CMU_STATUS_LFXOSEL:
+#if (EFM32_LFXO_FREQ > 0)
+        ret = SystemLFXOClock;
 #else
-            /* We should not get here, since core should not be clocked. May */
-            /* be caused by a misconfiguration though. */
-            ret = 0;
+        /* We should not get here, since core should not be clocked. May */
+        /* be caused by a misconfiguration though. */
+        ret = 0;
 #endif
-            break;
+        break;
 
-        case CMU_STATUS_LFRCOSEL:
-            ret = EFM32_LFRCO_FREQ;
-            break;
+    case CMU_STATUS_LFRCOSEL:
+        ret = EFM32_LFRCO_FREQ;
+        break;
 
-        case CMU_STATUS_HFXOSEL:
-#if(EFM32_HFXO_FREQ > 0)
-            ret = SystemHFXOClock;
+    case CMU_STATUS_HFXOSEL:
+#if (EFM32_HFXO_FREQ > 0)
+        ret = SystemHFXOClock;
 #else
-            /* We should not get here, since core should not be clocked. May */
-            /* be caused by a misconfiguration though. */
-            ret = 0;
+        /* We should not get here, since core should not be clocked. May */
+        /* be caused by a misconfiguration though. */
+        ret = 0;
 #endif
+        break;
+
+    default: /* CMU_STATUS_HFRCOSEL */
+        switch (CMU->HFRCOCTRL & _CMU_HFRCOCTRL_BAND_MASK) {
+        case CMU_HFRCOCTRL_BAND_28MHZ:
+            ret = 28000000;
             break;
 
-        default: /* CMU_STATUS_HFRCOSEL */
-            switch(CMU->HFRCOCTRL & _CMU_HFRCOCTRL_BAND_MASK) {
-                case CMU_HFRCOCTRL_BAND_28MHZ:
-                    ret = 28000000;
-                    break;
-
-                case CMU_HFRCOCTRL_BAND_21MHZ:
-                    ret = 21000000;
-                    break;
-
-                case CMU_HFRCOCTRL_BAND_14MHZ:
-                    ret = 14000000;
-                    break;
-
-                case CMU_HFRCOCTRL_BAND_11MHZ:
-                    ret = 11000000;
-                    break;
-
-                case CMU_HFRCOCTRL_BAND_7MHZ:
-                    if(GetProdRev() >= 19)
-                        ret = 6600000;
-                    else
-                        ret = 7000000;
-                    break;
-
-                case CMU_HFRCOCTRL_BAND_1MHZ:
-                    if(GetProdRev() >= 19)
-                        ret = 1200000;
-                    else
-                        ret = 1000000;
-                    break;
-
-                default:
-                    ret = 0;
-                    break;
-            }
+        case CMU_HFRCOCTRL_BAND_21MHZ:
+            ret = 21000000;
             break;
+
+        case CMU_HFRCOCTRL_BAND_14MHZ:
+            ret = 14000000;
+            break;
+
+        case CMU_HFRCOCTRL_BAND_11MHZ:
+            ret = 11000000;
+            break;
+
+        case CMU_HFRCOCTRL_BAND_7MHZ:
+            if (GetProdRev() >= 19)
+                ret = 6600000;
+            else
+                ret = 7000000;
+            break;
+
+        case CMU_HFRCOCTRL_BAND_1MHZ:
+            if (GetProdRev() >= 19)
+                ret = 1200000;
+            else
+                ret = 1000000;
+            break;
+
+        default:
+            ret = 0;
+            break;
+        }
+        break;
     }
 
     return ret / (1U + ((CMU->CTRL & _CMU_CTRL_HFCLKDIV_MASK) >>
@@ -248,7 +248,7 @@ uint32_t SystemHFClockGet(void) {
  *****************************************************************************/
 uint32_t SystemHFXOClockGet(void) {
     /* External crystal oscillator present? */
-#if(EFM32_HFXO_FREQ > 0)
+#if (EFM32_HFXO_FREQ > 0)
     return SystemHFXOClock;
 #else
     return 0;
@@ -273,11 +273,11 @@ uint32_t SystemHFXOClockGet(void) {
  *****************************************************************************/
 void SystemHFXOClockSet(uint32_t freq) {
     /* External crystal oscillator present? */
-#if(EFM32_HFXO_FREQ > 0)
+#if (EFM32_HFXO_FREQ > 0)
     SystemHFXOClock = freq;
 
     /* Update core clock frequency if HFXO is used to clock core */
-    if(CMU->STATUS & CMU_STATUS_HFXOSEL) {
+    if (CMU->STATUS & CMU_STATUS_HFXOSEL) {
         /* The function will update the global variable */
         SystemCoreClockGet();
     }
@@ -348,7 +348,7 @@ uint32_t SystemULFRCOClockGet(void) {
  *****************************************************************************/
 uint32_t SystemLFXOClockGet(void) {
     /* External crystal oscillator present? */
-#if(EFM32_LFXO_FREQ > 0)
+#if (EFM32_LFXO_FREQ > 0)
     return SystemLFXOClock;
 #else
     return 0;
@@ -373,11 +373,11 @@ uint32_t SystemLFXOClockGet(void) {
  *****************************************************************************/
 void SystemLFXOClockSet(uint32_t freq) {
     /* External crystal oscillator present? */
-#if(EFM32_LFXO_FREQ > 0)
+#if (EFM32_LFXO_FREQ > 0)
     SystemLFXOClock = freq;
 
     /* Update core clock frequency if LFXO is used to clock core */
-    if(CMU->STATUS & CMU_STATUS_LFXOSEL) {
+    if (CMU->STATUS & CMU_STATUS_LFXOSEL) {
         /* The function will update the global variable */
         SystemCoreClockGet();
     }

@@ -2,7 +2,7 @@
 
 #include "em_device.h"
 
-typedef GPIO_P_TypeDef* GPIO_t;
+typedef GPIO_P_TypeDef *GPIO_t;
 
 /**
  * @brief   mode options

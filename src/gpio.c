@@ -6,16 +6,16 @@ void GPIO_ConfigurePins(GPIO_t gpio, uint32_t pins, uint32_t mode) {
     const uint32_t mask = 0xF;
     uint32_t mbit = 0x0001;
 
-    for(int i = 0; i < 32; i += 4) {
-        if((pins & mbit) != 0) {
+    for (int i = 0; i < 32; i += 4) {
+        if ((pins & mbit) != 0) {
             gpio->MODEL &= ~(mask << i);
             gpio->MODEL |= mode << i;
         }
         mbit <<= 1;
     }
 
-    for(int i = 0; i < 32; i++) {
-        if((pins & mbit) != 0) {
+    for (int i = 0; i < 32; i++) {
+        if ((pins & mbit) != 0) {
             gpio->MODEH &= ~(mask << i);
             gpio->MODEH |= mode << i;
         }

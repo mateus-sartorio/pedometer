@@ -115,13 +115,13 @@ extern void  _start(void) __attribute__((noreturn));    /* Pre Main (C library e
 extern int  __START(void) __attribute__((noreturn));    /* main entry point */
 #endif
 
-#endif  // 0
+#endif // 0
 
 /*----------------------------------------------------------------------------
   STOP Macro. Can be used when stack fails
  *----------------------------------------------------------------------------*/
 #define __STOP() \
-    while(1) {   \
+    while (1) {  \
     }
 
 /*----------------------------------------------------------------------------
@@ -303,10 +303,10 @@ void __attribute__((weak, naked)) Reset_Handler(void) {
      */
     pTable = &__copy_table_start__;
 
-    for(; pTable < &__copy_table_end__; pTable = pTable + 3) {
+    for (; pTable < &__copy_table_end__; pTable = pTable + 3) {
         pSrc = (uint32_t *)*(pTable + 0);
         pDest = (uint32_t *)*(pTable + 1);
-        for(; pDest < (uint32_t *)(*(pTable + 1) + *(pTable + 2));) {
+        for (; pDest < (uint32_t *)(*(pTable + 1) + *(pTable + 2));) {
             *pDest++ = *pSrc++;
         }
     }
@@ -323,7 +323,7 @@ void __attribute__((weak, naked)) Reset_Handler(void) {
     pSrc = &__etext;
     pDest = &__data_start__;
 
-    for(; pDest < &__data_end__;) {
+    for (; pDest < &__data_end__;) {
         *pDest++ = *pSrc++;
     }
 #endif /*__STARTUP_COPY_MULTIPLE */
@@ -348,9 +348,9 @@ void __attribute__((weak, naked)) Reset_Handler(void) {
      */
     pTable = &__zero_table_start__;
 
-    for(; pTable < &__zero_table_end__; pTable = pTable + 2) {
+    for (; pTable < &__zero_table_end__; pTable = pTable + 2) {
         pDest = (uint32_t *)*(pTable + 0);
-        for(; pDest < (uint32_t *)(*(pTable + 0) + *(pTable + 1));) {
+        for (; pDest < (uint32_t *)(*(pTable + 0) + *(pTable + 1));) {
             *pDest++ = 0;
         }
     }
@@ -365,7 +365,7 @@ void __attribute__((weak, naked)) Reset_Handler(void) {
      */
     pDest = &__bss_start__;
 
-    for(; pDest < &__bss_end__;) {
+    for (; pDest < &__bss_end__;) {
         *pDest++ = 0ul;
     }
 #endif /* __STARTUP_CLEAR_BSS_MULTIPLE || __STARTUP_CLEAR_BSS */

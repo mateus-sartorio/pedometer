@@ -14,7 +14,7 @@ void GPIO_EVEN_IRQHandler(void) {
 
     const uint32_t mask = BUTTON2;
 
-    if(GPIO->IF & mask) {
+    if (GPIO->IF & mask) {
         last_read = (last_read & ~mask) | (newest_read & mask);
         new_read = GPIOB->DIN & mask;
         newest_read = (newest_read & ~mask) | new_read;
@@ -22,7 +22,7 @@ void GPIO_EVEN_IRQHandler(void) {
 
     GPIO->IFC = 0x5555;
 
-    if(callback) {
+    if (callback) {
         callback(mask);
     }
 }
@@ -32,7 +32,7 @@ void GPIO_ODD_IRQHandler(void) {
 
     const uint32_t mask = BUTTON1;
 
-    if(GPIO->IF & mask) {
+    if (GPIO->IF & mask) {
         last_read = (last_read & ~mask) | (newest_read & mask);
         new_read = GPIOB->DIN & mask;
         newest_read = (newest_read & ~mask) | new_read;
@@ -40,13 +40,13 @@ void GPIO_ODD_IRQHandler(void) {
 
     GPIO->IFC = 0xAAAA;
 
-    if(callback) {
+    if (callback) {
         callback(mask);
     }
 }
 
 void Button_Init(uint32_t buttons) {
-    if(buttons & BUTTON1) {
+    if (buttons & BUTTON1) {
         GPIOB->MODEH &= ~_GPIO_P_MODEL_MODE1_MASK;
         GPIOB->MODEH |= GPIO_P_MODEL_MODE1_INPUT;
         input_pins |= BUTTON1;
@@ -59,7 +59,7 @@ void Button_Init(uint32_t buttons) {
         GPIO->IEN |= BUTTON1;
     }
 
-    if(buttons & BUTTON2) {
+    if (buttons & BUTTON2) {
         GPIOB->MODEH &= ~_GPIO_P_MODEL_MODE2_MASK;
         GPIOB->MODEH |= GPIO_P_MODEL_MODE2_INPUT;
         input_pins |= BUTTON2;

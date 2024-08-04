@@ -538,26 +538,26 @@ static const uint16_t tablcd[15][15] = {
  */
 static const SegEncoding_t seg_encoding[] = {
     //   SEG19-16     SEG15-0
-    {0x00000000, BIT(12)},    //    S0       ->      Seg 12    SEGEN3
-    {0x00000000, BIT(13)},    //    S1       ->      Seg 13    SEGEN3
-    {0x00000000, BIT(14)},    //    S2       ->      Seg 14    SEGEN3
-    {0x00000000, BIT(15)},    //    S3       ->      Seg 15    SEGEN3
-    {0x00000000, BIT(16)},    //    S4       ->      Seg 16    SEGEN4
-    {0x00000000, BIT(17)},    //    S5       ->      Seg 17    SEGEN4
-    {0x00000000, BIT(18)},    //    S6       ->      Seg 18    SEGEN4
-    {0x00000000, BIT(19)},    //    S7       ->      Seg 19    SEGEN4
-    {0x00000000, BIT(28)},    //    S8       ->      Seg 28    SEGEN7
-    {0x00000000, BIT(29)},    //    S9       ->      Seg 29    SEGEN7
-    {0x00000000, BIT(30)},    //    S10      ->      Seg 30    SEGEN7
-    {0x00000000, BIT(31)},    //    S11      ->      Seg 31    SEGEN7
-    {BIT32(32), 0x00000000},  //    S12      ->      Seg 32    SEGEN8
-    {BIT32(33), 0x00000000},  //    S13      ->      Seg 33    SEGEN8
-    {BIT32(34), 0x00000000},  //    S14      ->      Seg 34    SEGEN8
-    {BIT32(35), 0x00000000},  //    S15      ->      Seg 35    SEGEN8
-    {BIT32(36), 0x00000000},  //    S16      ->      Seg 36    SEGEN9
-    {BIT32(37), 0x00000000},  //    S17      ->      Seg 37    SEGEN9
-    {BIT32(38), 0x00000000},  //    S18      ->      Seg 38    SEGEN9
-    {BIT32(39), 0x00000000},  //    S19      ->      Seg 39    SEGEN9
+    {0x00000000, BIT(12)},   //    S0       ->      Seg 12    SEGEN3
+    {0x00000000, BIT(13)},   //    S1       ->      Seg 13    SEGEN3
+    {0x00000000, BIT(14)},   //    S2       ->      Seg 14    SEGEN3
+    {0x00000000, BIT(15)},   //    S3       ->      Seg 15    SEGEN3
+    {0x00000000, BIT(16)},   //    S4       ->      Seg 16    SEGEN4
+    {0x00000000, BIT(17)},   //    S5       ->      Seg 17    SEGEN4
+    {0x00000000, BIT(18)},   //    S6       ->      Seg 18    SEGEN4
+    {0x00000000, BIT(19)},   //    S7       ->      Seg 19    SEGEN4
+    {0x00000000, BIT(28)},   //    S8       ->      Seg 28    SEGEN7
+    {0x00000000, BIT(29)},   //    S9       ->      Seg 29    SEGEN7
+    {0x00000000, BIT(30)},   //    S10      ->      Seg 30    SEGEN7
+    {0x00000000, BIT(31)},   //    S11      ->      Seg 31    SEGEN7
+    {BIT32(32), 0x00000000}, //    S12      ->      Seg 32    SEGEN8
+    {BIT32(33), 0x00000000}, //    S13      ->      Seg 33    SEGEN8
+    {BIT32(34), 0x00000000}, //    S14      ->      Seg 34    SEGEN8
+    {BIT32(35), 0x00000000}, //    S15      ->      Seg 35    SEGEN8
+    {BIT32(36), 0x00000000}, //    S16      ->      Seg 36    SEGEN9
+    {BIT32(37), 0x00000000}, //    S17      ->      Seg 37    SEGEN9
+    {BIT32(38), 0x00000000}, //    S18      ->      Seg 38    SEGEN9
+    {BIT32(39), 0x00000000}, //    S19      ->      Seg 39    SEGEN9
 };
 
 /**
@@ -574,40 +574,40 @@ static const uint8_t com_encoding[8] = {7, 6, 5, 4, 3, 2, 1, 0};
  *
  */
 static const uint16_t tablcdspecial[] = {
-    C6 | S00,  // LCD_GECKO
-    C4 | S00,  // LCD_MINUS
-    C4 | S19,  // LCD_PAD0
-    C5 | S00,  // LCD_PAD1
-    C7 | S12,  // LCD_ANTENNA
-    C7 | S09,  // LCD_EMF32
-    C7 | S13,  // LCD_BATTERY
-    C7 | S17,  // LCD_BAT0
-    C7 | S16,  // LCD_BAT1
-    C7 | S18,  // LCD_BAT2
-    C7 | S07,  // LCD_ARC0
-    C7 | S06,  // LCD_ARC1
-    C7 | S05,  // LCD_ARC2
-    C7 | S04,  // LCD_ARC3
-    C7 | S03,  // LCD_ARC4
-    C7 | S02,  // LCD_ARC5
-    C7 | S01,  // LCD_ARC6
-    C7 | S00,  // LCD_ARC7
-    C7 | S19,  // LCD_TARGET0
-    C6 | S19,  // LCD_TARGET1
-    C0 | S19,  // LCD_TARGET2
-    C5 | S19,  // LCD_TARGET3
-    C1 | S19,  // LCD_TARGET4
-    C7 | S14,  // LCD_C
-    C7 | S15,  // LCD_F
-    C3 | S00,  // LCD_COLLON3
-    C7 | S10,  // LCD_COLLON5
-    C2 | S19,  // LCD_COLLON10
-    C0 | S00,  // LCD_DP2
-    C2 | S00,  // LCD_DP3
-    C1 | S00,  // LCD_DP4
-    C0 | S09,  // LCD_DP5
-    C0 | S11,  // LCD_DP6
-    C3 | S19   // LCD_DP10
+    C6 | S00, // LCD_GECKO
+    C4 | S00, // LCD_MINUS
+    C4 | S19, // LCD_PAD0
+    C5 | S00, // LCD_PAD1
+    C7 | S12, // LCD_ANTENNA
+    C7 | S09, // LCD_EMF32
+    C7 | S13, // LCD_BATTERY
+    C7 | S17, // LCD_BAT0
+    C7 | S16, // LCD_BAT1
+    C7 | S18, // LCD_BAT2
+    C7 | S07, // LCD_ARC0
+    C7 | S06, // LCD_ARC1
+    C7 | S05, // LCD_ARC2
+    C7 | S04, // LCD_ARC3
+    C7 | S03, // LCD_ARC4
+    C7 | S02, // LCD_ARC5
+    C7 | S01, // LCD_ARC6
+    C7 | S00, // LCD_ARC7
+    C7 | S19, // LCD_TARGET0
+    C6 | S19, // LCD_TARGET1
+    C0 | S19, // LCD_TARGET2
+    C5 | S19, // LCD_TARGET3
+    C1 | S19, // LCD_TARGET4
+    C7 | S14, // LCD_C
+    C7 | S15, // LCD_F
+    C3 | S00, // LCD_COLLON3
+    C7 | S10, // LCD_COLLON5
+    C2 | S19, // LCD_COLLON10
+    C0 | S00, // LCD_DP2
+    C2 | S00, // LCD_DP3
+    C1 | S00, // LCD_DP4
+    C0 | S09, // LCD_DP5
+    C0 | S11, // LCD_DP6
+    C3 | S19  // LCD_DP10
 };
 
 /**
@@ -633,156 +633,156 @@ static const SegEncoding_t tablcdclear[15][8] = {
      /* C7  */ {0, 0}},
     /* Position  P01 - 14 segment display  */
     {
-        /* C0  */ {0, BIT32(13) | BIT32(14)},  // Segments E and D
-        /* C1  */ {0, BIT32(13) | BIT32(14)},  // Segments Q and N
-        /* C2  */ {0, BIT32(13) | BIT32(14)},  // Segments P and C
-        /* C3  */ {0, BIT32(13) | BIT32(14)},  // Segments G and M
-        /* C4  */ {0, BIT32(13) | BIT32(14)},  // Segments F and J
-        /* C5  */ {0, BIT32(13) | BIT32(14)},  // Segments H and K
-        /* C6  */ {0, BIT32(13) | BIT32(14)},  // Segments A and B
-        /* C7  */ {0, 0}                       //
+        /* C0  */ {0, BIT32(13) | BIT32(14)}, // Segments E and D
+        /* C1  */ {0, BIT32(13) | BIT32(14)}, // Segments Q and N
+        /* C2  */ {0, BIT32(13) | BIT32(14)}, // Segments P and C
+        /* C3  */ {0, BIT32(13) | BIT32(14)}, // Segments G and M
+        /* C4  */ {0, BIT32(13) | BIT32(14)}, // Segments F and J
+        /* C5  */ {0, BIT32(13) | BIT32(14)}, // Segments H and K
+        /* C6  */ {0, BIT32(13) | BIT32(14)}, // Segments A and B
+        /* C7  */ {0, 0}                      //
     },
     /* Position  P02 - 14 segment display  */
     {
-        /* C0  */ {0, BIT32(15) | BIT32(16)},  // Segments E and D
-        /* C1  */ {0, BIT32(15) | BIT32(16)},  // Segments Q and N
-        /* C2  */ {0, BIT32(15) | BIT32(16)},  // Segments P and C
-        /* C3  */ {0, BIT32(15) | BIT32(16)},  // Segments G and M
-        /* C4  */ {0, BIT32(15) | BIT32(16)},  // Segments F and J
-        /* C5  */ {0, BIT32(15) | BIT32(16)},  // Segments H and K
-        /* C6  */ {0, BIT32(15) | BIT32(16)},  // Segments A and B
-        /* C7  */ {0, 0}                       //
+        /* C0  */ {0, BIT32(15) | BIT32(16)}, // Segments E and D
+        /* C1  */ {0, BIT32(15) | BIT32(16)}, // Segments Q and N
+        /* C2  */ {0, BIT32(15) | BIT32(16)}, // Segments P and C
+        /* C3  */ {0, BIT32(15) | BIT32(16)}, // Segments G and M
+        /* C4  */ {0, BIT32(15) | BIT32(16)}, // Segments F and J
+        /* C5  */ {0, BIT32(15) | BIT32(16)}, // Segments H and K
+        /* C6  */ {0, BIT32(15) | BIT32(16)}, // Segments A and B
+        /* C7  */ {0, 0}                      //
     },
     /* Position  P03 - 14 segment display  */
     {
-        /* C0  */ {0, BIT32(17) | BIT32(18)},  // Segments E and D
-        /* C1  */ {0, BIT32(17) | BIT32(18)},  // Segments Q and N
-        /* C2  */ {0, BIT32(17) | BIT32(18)},  // Segments P and C
-        /* C3  */ {0, BIT32(17) | BIT32(18)},  // Segments G and M
-        /* C4  */ {0, BIT32(17) | BIT32(18)},  // Segments F and J
-        /* C5  */ {0, BIT32(17) | BIT32(18)},  // Segments H and K
-        /* C6  */ {0, BIT32(17) | BIT32(18)},  // Segments A and B
-        /* C7  */ {0, 0}                       //
+        /* C0  */ {0, BIT32(17) | BIT32(18)}, // Segments E and D
+        /* C1  */ {0, BIT32(17) | BIT32(18)}, // Segments Q and N
+        /* C2  */ {0, BIT32(17) | BIT32(18)}, // Segments P and C
+        /* C3  */ {0, BIT32(17) | BIT32(18)}, // Segments G and M
+        /* C4  */ {0, BIT32(17) | BIT32(18)}, // Segments F and J
+        /* C5  */ {0, BIT32(17) | BIT32(18)}, // Segments H and K
+        /* C6  */ {0, BIT32(17) | BIT32(18)}, // Segments A and B
+        /* C7  */ {0, 0}                      //
     },
     /* Position  P04 - 14 segment display  */
     {
-        /* C0  */ {0, BIT32(19) | BIT32(28)},  // Segments E and D
-        /* C1  */ {0, BIT32(19) | BIT32(28)},  // Segments Q and N
-        /* C2  */ {0, BIT32(19) | BIT32(28)},  // Segments P and C
-        /* C3  */ {0, BIT32(19) | BIT32(28)},  // Segments G and M
-        /* C4  */ {0, BIT32(19) | BIT32(28)},  // Segments F and J
-        /* C5  */ {0, BIT32(19) | BIT32(28)},  // Segments H and K
-        /* C6  */ {0, BIT32(19) | BIT32(28)},  // Segments A and B
-        /* C7  */ {0, 0}                       //
+        /* C0  */ {0, BIT32(19) | BIT32(28)}, // Segments E and D
+        /* C1  */ {0, BIT32(19) | BIT32(28)}, // Segments Q and N
+        /* C2  */ {0, BIT32(19) | BIT32(28)}, // Segments P and C
+        /* C3  */ {0, BIT32(19) | BIT32(28)}, // Segments G and M
+        /* C4  */ {0, BIT32(19) | BIT32(28)}, // Segments F and J
+        /* C5  */ {0, BIT32(19) | BIT32(28)}, // Segments H and K
+        /* C6  */ {0, BIT32(19) | BIT32(28)}, // Segments A and B
+        /* C7  */ {0, 0}                      //
     },
     /* Position  P05 - 14 segment display  */
     {
-        /* C0  */ {0, BIT32(30)},              // Segment D
-        /* C1  */ {0, BIT32(29) | BIT32(30)},  // Segments E and N
-        /* C2  */ {0, BIT32(29) | BIT32(30)},  // Segments Q and C
-        /* C3  */ {0, BIT32(29) | BIT32(30)},  // Segments P and M
-        /* C4  */ {0, BIT32(29) | BIT32(30)},  // Segments G and J
-        /* C5  */ {0, BIT32(29) | BIT32(30)},  // Segments F and K
-        /* C6  */ {0, BIT32(29) | BIT32(30)},  // Segments H and B
-        /* C7  */ {0, BIT32(29)}               // Segment A
+        /* C0  */ {0, BIT32(30)},             // Segment D
+        /* C1  */ {0, BIT32(29) | BIT32(30)}, // Segments E and N
+        /* C2  */ {0, BIT32(29) | BIT32(30)}, // Segments Q and C
+        /* C3  */ {0, BIT32(29) | BIT32(30)}, // Segments P and M
+        /* C4  */ {0, BIT32(29) | BIT32(30)}, // Segments G and J
+        /* C5  */ {0, BIT32(29) | BIT32(30)}, // Segments F and K
+        /* C6  */ {0, BIT32(29) | BIT32(30)}, // Segments H and B
+        /* C7  */ {0, BIT32(29)}              // Segment A
     },
     /* Position  P06 - 14 segment display  */
     {
-        /* C0  */ {BIT32(32), 0},          // Segment D
-        /* C1  */ {BIT32(32), BIT32(31)},  // Segments E and N
-        /* C2  */ {BIT32(32), BIT32(31)},  // Segments Q and C
-        /* C3  */ {BIT32(32), BIT32(31)},  // Segments P and M
-        /* C4  */ {BIT32(32), BIT32(31)},  // Segments G and J
-        /* C5  */ {BIT32(32), BIT32(31)},  // Segments F and K
-        /* C6  */ {BIT32(32), BIT32(31)},  // Segments H and B
-        /* C7  */ {0, BIT32(31)}           // Segment A
+        /* C0  */ {BIT32(32), 0},         // Segment D
+        /* C1  */ {BIT32(32), BIT32(31)}, // Segments E and N
+        /* C2  */ {BIT32(32), BIT32(31)}, // Segments Q and C
+        /* C3  */ {BIT32(32), BIT32(31)}, // Segments P and M
+        /* C4  */ {BIT32(32), BIT32(31)}, // Segments G and J
+        /* C5  */ {BIT32(32), BIT32(31)}, // Segments F and K
+        /* C6  */ {BIT32(32), BIT32(31)}, // Segments H and B
+        /* C7  */ {0, BIT32(31)}          // Segment A
 
     },
     /* Position  P07 - 14 segment display */
     {
-        /* C0  */ {BIT32(33) | BIT32(34), 0},  // Segments E and D
-        /* C1  */ {BIT32(33) | BIT32(34), 0},  // Segments Q and N
-        /* C2  */ {BIT32(33) | BIT32(34), 0},  // Segments P and C
-        /* C3  */ {BIT32(33) | BIT32(34), 0},  // Segments G and M
-        /* C4  */ {BIT32(33) | BIT32(34), 0},  // Segments F and J
-        /* C5  */ {BIT32(33) | BIT32(34), 0},  // Segments H and K
-        /* C6  */ {BIT32(33) | BIT32(34), 0},  // Segments A and B
-        /* C7  */ {0, 0}                       //
+        /* C0  */ {BIT32(33) | BIT32(34), 0}, // Segments E and D
+        /* C1  */ {BIT32(33) | BIT32(34), 0}, // Segments Q and N
+        /* C2  */ {BIT32(33) | BIT32(34), 0}, // Segments P and C
+        /* C3  */ {BIT32(33) | BIT32(34), 0}, // Segments G and M
+        /* C4  */ {BIT32(33) | BIT32(34), 0}, // Segments F and J
+        /* C5  */ {BIT32(33) | BIT32(34), 0}, // Segments H and K
+        /* C6  */ {BIT32(33) | BIT32(34), 0}, // Segments A and B
+        /* C7  */ {0, 0}                      //
     },
     /* Position  P08 - 14 segment display  */
-    {/* C0  */ {BIT32(38), 0},  // Segment A
-     /* C1  */ {BIT32(38), 0},  // Segment F
-     /* C2  */ {BIT32(38), 0},  // Segment B
-     /* C3  */ {BIT32(38), 0},  // Segment G
-     /* C4  */ {BIT32(38), 0},  // Segment E
-     /* C5  */ {BIT32(38), 0},  // Segment C
-     /* C6  */ {BIT32(38), 0},  // Segment D
+    {/* C0  */ {BIT32(38), 0}, // Segment A
+     /* C1  */ {BIT32(38), 0}, // Segment F
+     /* C2  */ {BIT32(38), 0}, // Segment B
+     /* C3  */ {BIT32(38), 0}, // Segment G
+     /* C4  */ {BIT32(38), 0}, // Segment E
+     /* C5  */ {BIT32(38), 0}, // Segment C
+     /* C6  */ {BIT32(38), 0}, // Segment D
      /* C7  */ {0, 0}},
     /* Position  P09 - 7 segment display  */
-    {/* C0  */ {BIT32(37), 0},  // Segment A
-     /* C1  */ {BIT32(37), 0},  // Segment F
-     /* C2  */ {BIT32(37), 0},  // Segment B
-     /* C3  */ {BIT32(37), 0},  // Segment G
-     /* C4  */ {BIT32(37), 0},  // Segment E
-     /* C5  */ {BIT32(37), 0},  // Segment C
-     /* C6  */ {BIT32(37), 0},  // Segment D
+    {/* C0  */ {BIT32(37), 0}, // Segment A
+     /* C1  */ {BIT32(37), 0}, // Segment F
+     /* C2  */ {BIT32(37), 0}, // Segment B
+     /* C3  */ {BIT32(37), 0}, // Segment G
+     /* C4  */ {BIT32(37), 0}, // Segment E
+     /* C5  */ {BIT32(37), 0}, // Segment C
+     /* C6  */ {BIT32(37), 0}, // Segment D
      /* C7  */ {0, 0}},
     /* Position  P10 - 7 segment display   */
-    {/* C0  */ {BIT32(36), 0},  // Segment A
-     /* C1  */ {BIT32(36), 0},  // Segment F
-     /* C2  */ {BIT32(36), 0},  // Segment B
-     /* C3  */ {BIT32(36), 0},  // Segment G
-     /* C4  */ {BIT32(36), 0},  // Segment E
-     /* C5  */ {BIT32(36), 0},  // Segment C
-     /* C6  */ {BIT32(36), 0},  // Segment D
+    {/* C0  */ {BIT32(36), 0}, // Segment A
+     /* C1  */ {BIT32(36), 0}, // Segment F
+     /* C2  */ {BIT32(36), 0}, // Segment B
+     /* C3  */ {BIT32(36), 0}, // Segment G
+     /* C4  */ {BIT32(36), 0}, // Segment E
+     /* C5  */ {BIT32(36), 0}, // Segment C
+     /* C6  */ {BIT32(36), 0}, // Segment D
      /* C7  */ {0, 0}},
     /* Position  P11 - 7 segment display   */
-    {/* C0  */ {BIT32(35), 0},  // Segment A
-     /* C1  */ {BIT32(35), 0},  // Segment F
-     /* C2  */ {BIT32(35), 0},  // Segment B
-     /* C3  */ {BIT32(35), 0},  // Segment G
-     /* C4  */ {BIT32(35), 0},  // Segment E
-     /* C5  */ {BIT32(35), 0},  // Segment C
-     /* C6  */ {BIT32(35), 0},  // Segment D
+    {/* C0  */ {BIT32(35), 0}, // Segment A
+     /* C1  */ {BIT32(35), 0}, // Segment F
+     /* C2  */ {BIT32(35), 0}, // Segment B
+     /* C3  */ {BIT32(35), 0}, // Segment G
+     /* C4  */ {BIT32(35), 0}, // Segment E
+     /* C5  */ {BIT32(35), 0}, // Segment C
+     /* C6  */ {BIT32(35), 0}, // Segment D
      /* C7  */ {0, 0}},
     /* Position  P12 - 8 segments pizza display   */
     {
-        /* C0  */ {0, 0},                      //
-        /* C1  */ {0, 0},                      //
-        /* C2  */ {0, 0},                      //
-        /* C3  */ {0, 0},                      //
-        /* C4  */ {0, 0},                      //
-        /* C5  */ {0, 0},                      //
-        /* C6  */ {0, 0},                      //
-                                               /* C7  */
-        {0, BIT(19) | BIT(18) | BIT(17)        // Segments A0, A1, A2
-                | BIT(16) | BIT(15) | BIT(14)  // Segments A3, A4, A5
-                | BIT(13) | BIT(12)}           // Segments A6, A7
+        /* C0  */ {0, 0},                     //
+        /* C1  */ {0, 0},                     //
+        /* C2  */ {0, 0},                     //
+        /* C3  */ {0, 0},                     //
+        /* C4  */ {0, 0},                     //
+        /* C5  */ {0, 0},                     //
+        /* C6  */ {0, 0},                     //
+                                              /* C7  */
+        {0, BIT(19) | BIT(18) | BIT(17)       // Segments A0, A1, A2
+                | BIT(16) | BIT(15) | BIT(14) // Segments A3, A4, A5
+                | BIT(13) | BIT(12)}          // Segments A6, A7
     },
     /* Position  P13 - 3 levels battery display   */
     {
-        /* C0  */ {0, 0},       //
-        /* C1  */ {0, 0},       //
-        /* C2  */ {0, 0},       //
-        /* C3  */ {0, 0},       //
-        /* C4  */ {0, 0},       //
-        /* C5  */ {0, 0},       //
-        /* C6  */ {0, 0},       //
-                                /* C7  */
-        {BIT32(38) | BIT32(37)  // Segment B2, B0
+        /* C0  */ {0, 0},      //
+        /* C1  */ {0, 0},      //
+        /* C2  */ {0, 0},      //
+        /* C3  */ {0, 0},      //
+        /* C4  */ {0, 0},      //
+        /* C5  */ {0, 0},      //
+        /* C6  */ {0, 0},      //
+                               /* C7  */
+        {BIT32(38) | BIT32(37) // Segment B2, B0
              | BIT32(36),
-         0}  // Segment B1
+         0} // Segment B1
     },
     /* Position  P14 - 8 segments target display   */
     {
-        /* C0  */ {BIT32(39), 0},  // Segment EM2
-        /* C1  */ {BIT32(39), 0},  // Segment EM4
-        /* C2  */ {0, 0},          //
-        /* C3  */ {0, 0},          //
-        /* C4  */ {0, 0},          //
-        /* C5  */ {BIT32(39), 0},  // Segment EM3
-        /* C6  */ {BIT32(39), 0},  // Segment EM1
-        /* C7  */ {BIT32(39), 0}   // Segment EM0
+        /* C0  */ {BIT32(39), 0}, // Segment EM2
+        /* C1  */ {BIT32(39), 0}, // Segment EM4
+        /* C2  */ {0, 0},         //
+        /* C3  */ {0, 0},         //
+        /* C4  */ {0, 0},         //
+        /* C5  */ {BIT32(39), 0}, // Segment EM3
+        /* C6  */ {BIT32(39), 0}, // Segment EM1
+        /* C7  */ {BIT32(39), 0}  // Segment EM0
     },
 };
 
@@ -838,11 +838,11 @@ uint32_t SetLFAClock(uint32_t source) {
 #else
     uint32_t oldlfaclken0, lfclksel;
 
-    if(source == LCD_CLOCK_DEFAULT)
+    if (source == LCD_CLOCK_DEFAULT)
         source = LCD_CLOCK_LFRCO;
 
     /* If LCD active, disable it. It is not restored */
-    if(LCD->CTRL & LCD_CTRL_EN) {
+    if (LCD->CTRL & LCD_CTRL_EN) {
         LCD->CTRL &= ~(LCD_CTRL_EN);
     }
 
@@ -892,132 +892,132 @@ uint32_t SetLFAClock(uint32_t source) {
     /*
      * First, configure and enable the clock source for the LCD module
      */
-    switch(source) {
-        case LCD_CLOCK_LFRCO:
-            /*
-             * Set LFRCO as LFACLK clock source
-             *
-             * LFRCO is a RC oscillator withe a nominal frequency of 32768 Hz.
-             * Following contents of
-             * http://embeddedelectrons.blogspot.com/2016/12/example-code-for-segment-lcd-on-efm32.html
-             */
+    switch (source) {
+    case LCD_CLOCK_LFRCO:
+        /*
+         * Set LFRCO as LFACLK clock source
+         *
+         * LFRCO is a RC oscillator withe a nominal frequency of 32768 Hz.
+         * Following contents of
+         * http://embeddedelectrons.blogspot.com/2016/12/example-code-for-segment-lcd-on-efm32.html
+         */
 
-            /*
-             * Set LFRCOEN bit to enable the low frequency RC oscillator (LFRCO)
-             */
-            CMU->OSCENCMD = CMU_OSCENCMD_LFRCOEN;
-            /*
-             * Wait until LFRCO is enabled and start-up time has exceeded
-             */
-            while(!(CMU->STATUS & CMU_STATUS_LFRCORDY)) {
-            }
+        /*
+         * Set LFRCOEN bit to enable the low frequency RC oscillator (LFRCO)
+         */
+        CMU->OSCENCMD = CMU_OSCENCMD_LFRCOEN;
+        /*
+         * Wait until LFRCO is enabled and start-up time has exceeded
+         */
+        while (!(CMU->STATUS & CMU_STATUS_LFRCORDY)) {
+        }
 
-            /*
-             * Set the LFACLK to use LFRCO as clock source
-             *
-             */
-            lfclksel = CMU->LFCLKSEL;
-            lfclksel &= ~CMU_LFCLKSEL_LFAE_ULFRCO;  // Clear LFAE bit
-            lfclksel &= ~_CMU_LFCLKSEL_LFA_MASK;    // Clear LFA field
-            lfclksel |=
-                CMU_LFCLKSEL_LFA_LFRCO;  // Set LFRCO as LFACLK clock source
-            CMU->LFCLKSEL = lfclksel;
-            break;
-        case LCD_CLOCK_HFCORECLK_2:
-            /*
-             * Additional division factor for HFCORECLKLE
-             * See 11.5.2
-             * This can only be done when HFCORECLK <= 32 MHz
-             */
-            if(SystemCoreClock < 32000000) {
-                CMU->HFCORECLKDIV &= ~CMU_HFCORECLKDIV_HFCORECLKLEDIV;
-            }
+        /*
+         * Set the LFACLK to use LFRCO as clock source
+         *
+         */
+        lfclksel = CMU->LFCLKSEL;
+        lfclksel &= ~CMU_LFCLKSEL_LFAE_ULFRCO; // Clear LFAE bit
+        lfclksel &= ~_CMU_LFCLKSEL_LFA_MASK;   // Clear LFA field
+        lfclksel |=
+            CMU_LFCLKSEL_LFA_LFRCO; // Set LFRCO as LFACLK clock source
+        CMU->LFCLKSEL = lfclksel;
+        break;
+    case LCD_CLOCK_HFCORECLK_2:
+        /*
+         * Additional division factor for HFCORECLKLE
+         * See 11.5.2
+         * This can only be done when HFCORECLK <= 32 MHz
+         */
+        if (SystemCoreClock < 32000000) {
+            CMU->HFCORECLKDIV &= ~CMU_HFCORECLKDIV_HFCORECLKLEDIV;
+        }
 
-            /*
-             * Set HFCORECLK/2 as LFACLK clock source
-             * HFCORECLK is derived from the HFCORECLK
-             * This is configured in the LFCLKSEL register
-             * See RM section 11.5.11
-             */
-            lfclksel = CMU->LFCLKSEL;
-            lfclksel &= ~CMU_LFCLKSEL_LFAE_ULFRCO;  // Clear LFAE bit
-            lfclksel &= ~_CMU_LFCLKSEL_LFA_MASK;    // Clear LFA field
-            lfclksel |= CMU_LFCLKSEL_LFA_HFCORECLKLEDIV2;
-            // Set HFCOREPERCLK_2 as LFACLK clock source
-            CMU->LFCLKSEL = lfclksel;
-            break;
-        case LCD_CLOCK_HFCORECLK_4:
-            /*
-             * Additional division factor for HFCORECLKLE
-             * See 11.5.2
-             */
-            CMU->HFCORECLKDIV |= CMU_HFCORECLKDIV_HFCORECLKLEDIV;
+        /*
+         * Set HFCORECLK/2 as LFACLK clock source
+         * HFCORECLK is derived from the HFCORECLK
+         * This is configured in the LFCLKSEL register
+         * See RM section 11.5.11
+         */
+        lfclksel = CMU->LFCLKSEL;
+        lfclksel &= ~CMU_LFCLKSEL_LFAE_ULFRCO; // Clear LFAE bit
+        lfclksel &= ~_CMU_LFCLKSEL_LFA_MASK;   // Clear LFA field
+        lfclksel |= CMU_LFCLKSEL_LFA_HFCORECLKLEDIV2;
+        // Set HFCOREPERCLK_2 as LFACLK clock source
+        CMU->LFCLKSEL = lfclksel;
+        break;
+    case LCD_CLOCK_HFCORECLK_4:
+        /*
+         * Additional division factor for HFCORECLKLE
+         * See 11.5.2
+         */
+        CMU->HFCORECLKDIV |= CMU_HFCORECLKDIV_HFCORECLKLEDIV;
 
-            /*
-             * Set HFCORECLK/4 as LFACLK clock source
-             * HFCORECLK is derived from the HFCORECLK
-             * This is configured in the LFCLKSEL register
-             * See RM section 11.5.11
-             */
-            lfclksel = CMU->LFCLKSEL;
-            lfclksel &= ~CMU_LFCLKSEL_LFAE_ULFRCO;  // Clear LFAE bit
-            lfclksel &= ~_CMU_LFCLKSEL_LFA_MASK;    // Clear LFA field
-            lfclksel |= CMU_LFCLKSEL_LFA_HFCORECLKLEDIV2;
-            // Set HFCOREPERCLK_2 as LFACLK clock source
-            CMU->LFCLKSEL = lfclksel;
-            break;
-        case LCD_CLOCK_ULFRCO:
-            /*
-             * Set ULFRCO as LFACLK clock source
-             *
-             * ULFRCO is a RC oscillator with a nominal frequency of 1 or 2 KHz
-             * (depends on the chip??) ULFRCO is enable by default. It can only
-             * be disabled by selection other clock source in the OSC field of
-             * the EMU_EMF4CONF register
-             *
-             * NOTE: The instruction below changes the clock source for the
-             * Energy Mode 4 (EM4)!!!!!! This can be disable by defining
-             * DO_NOT_RECONFIGURE_EM4OSC compiler flag
-             *
-             */
+        /*
+         * Set HFCORECLK/4 as LFACLK clock source
+         * HFCORECLK is derived from the HFCORECLK
+         * This is configured in the LFCLKSEL register
+         * See RM section 11.5.11
+         */
+        lfclksel = CMU->LFCLKSEL;
+        lfclksel &= ~CMU_LFCLKSEL_LFAE_ULFRCO; // Clear LFAE bit
+        lfclksel &= ~_CMU_LFCLKSEL_LFA_MASK;   // Clear LFA field
+        lfclksel |= CMU_LFCLKSEL_LFA_HFCORECLKLEDIV2;
+        // Set HFCOREPERCLK_2 as LFACLK clock source
+        CMU->LFCLKSEL = lfclksel;
+        break;
+    case LCD_CLOCK_ULFRCO:
+        /*
+         * Set ULFRCO as LFACLK clock source
+         *
+         * ULFRCO is a RC oscillator with a nominal frequency of 1 or 2 KHz
+         * (depends on the chip??) ULFRCO is enable by default. It can only
+         * be disabled by selection other clock source in the OSC field of
+         * the EMU_EMF4CONF register
+         *
+         * NOTE: The instruction below changes the clock source for the
+         * Energy Mode 4 (EM4)!!!!!! This can be disable by defining
+         * DO_NOT_RECONFIGURE_EM4OSC compiler flag
+         *
+         */
 #ifndef DO_NOT_RECONFIGURE_EM4OSC
-            EMU->EM4CONF &= ~_EMU_EM4CONF_OSC_MASK;
+        EMU->EM4CONF &= ~_EMU_EM4CONF_OSC_MASK;
 #endif
 
-            /*
-             * Configure ULFRCO as LFACLK clock source
-             * This is configured in the LFCLKSEL register
-             * See RM section 11.5.11
-             */
-            lfclksel = CMU->LFCLKSEL;
-            lfclksel |= CMU_LFCLKSEL_LFAE_ULFRCO;  // Clear LFAE bit
-            lfclksel &= ~_CMU_LFCLKSEL_LFA_MASK;   // Clear LFA field
-            CMU->LFCLKSEL = lfclksel;
-            break;
+        /*
+         * Configure ULFRCO as LFACLK clock source
+         * This is configured in the LFCLKSEL register
+         * See RM section 11.5.11
+         */
+        lfclksel = CMU->LFCLKSEL;
+        lfclksel |= CMU_LFCLKSEL_LFAE_ULFRCO; // Clear LFAE bit
+        lfclksel &= ~_CMU_LFCLKSEL_LFA_MASK;  // Clear LFA field
+        CMU->LFCLKSEL = lfclksel;
+        break;
 
-        case LCD_CLOCK_LFXO:
-            /*
-             * Set ULFRCO as LFACLK clock source
-             *
-             * LFXO is an oscillator that uses a external 32768 Hz crystal
-             */
+    case LCD_CLOCK_LFXO:
+        /*
+         * Set ULFRCO as LFACLK clock source
+         *
+         * LFXO is an oscillator that uses a external 32768 Hz crystal
+         */
 
-            // If LFXO is NOT enabled, enable it
-            if((CMU->STATUS & CMU_STATUS_LFXOENS) == 0) {
-                CMU->OSCENCMD = CMU_OSCENCMD_LFXOEN;
-            }
+        // If LFXO is NOT enabled, enable it
+        if ((CMU->STATUS & CMU_STATUS_LFXOENS) == 0) {
+            CMU->OSCENCMD = CMU_OSCENCMD_LFXOEN;
+        }
 
-            lfclksel = CMU->LFCLKSEL;
-            lfclksel &= ~CMU_LFCLKSEL_LFAE_ULFRCO;  // Clear LFAE bit
-            lfclksel &= ~_CMU_LFCLKSEL_LFA_MASK;    // Clear LFA field
-            lfclksel |=
-                CMU_LFCLKSEL_LFA_LFXO;  // Set LFXCO as LFACLK clock source
-            CMU->LFCLKSEL = lfclksel;
-            break;
+        lfclksel = CMU->LFCLKSEL;
+        lfclksel &= ~CMU_LFCLKSEL_LFAE_ULFRCO; // Clear LFAE bit
+        lfclksel &= ~_CMU_LFCLKSEL_LFA_MASK;   // Clear LFA field
+        lfclksel |=
+            CMU_LFCLKSEL_LFA_LFXO; // Set LFXCO as LFACLK clock source
+        CMU->LFCLKSEL = lfclksel;
+        break;
     }
 
     /* if LFACK not active then return and signalizes error */
-    if((CMU->LFCLKSEL & (_CMU_LFCLKSEL_LFA_MASK | CMU_LFCLKSEL_LFAE)) == 0) {
+    if ((CMU->LFCLKSEL & (_CMU_LFCLKSEL_LFA_MASK | CMU_LFCLKSEL_LFAE)) == 0) {
         return 1;
     }
 
@@ -1036,14 +1036,14 @@ uint32_t SetLFAClock(uint32_t source) {
  *
  */
 uint32_t LCD_SetClock(uint32_t presc, uint32_t div) {
-    if(presc == LCD_PRESC_DEFAULT)
+    if (presc == LCD_PRESC_DEFAULT)
         presc = LCD_PRESC_DIV16;
 
-    if(div == LCD_DIV_DEFAULT) {
+    if (div == LCD_DIV_DEFAULT) {
         div = 0;
     } else {
         div--;
-        if(div > 7)
+        if (div > 7)
             div = 7;
     }
 
@@ -1109,7 +1109,7 @@ uint32_t LCD_Config(uint32_t presc, uint32_t div) {
     int i;
 
     /* Initializes area for segment information */
-    for(i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++) {
         lcd[i].hi = 0;
         lcd[i].lo = 0;
     }
@@ -1126,7 +1126,7 @@ uint32_t LCD_Config(uint32_t presc, uint32_t div) {
     LCD->CTRL &= ~(LCD_CTRL_EN);
 
     /* If clock no set, configure it */
-    if(!lcdclock_set) {
+    if (!lcdclock_set) {
         SetLFAClock(LCD_CLOCK_DEFAULT);
         LCD_SetClock(LCD_PRESC_DEFAULT, LCD_DIV_DEFAULT);
         lcdclock_set = 1;
@@ -1143,7 +1143,7 @@ uint32_t LCD_Config(uint32_t presc, uint32_t div) {
      */
 
     // Scan all character encoding and accumulates all bits used
-    for(i = 0; i < sizeof(seg_encoding) / sizeof(SegEncoding_t); i++) {
+    for (i = 0; i < sizeof(seg_encoding) / sizeof(SegEncoding_t); i++) {
         used.hi |= seg_encoding[i].hi;
         used.lo |= seg_encoding[i].lo;
     }
@@ -1152,16 +1152,16 @@ uint32_t LCD_Config(uint32_t presc, uint32_t div) {
     m = 1;
     m4 = 0xF;
     segen = 0;
-    while((m & BIT(8)) == 0) {
-        if((used.lo & m4) != 0) {
+    while ((m & BIT(8)) == 0) {
+        if ((used.lo & m4) != 0) {
             segen |= m;
         }
         m <<= 1;
         m4 <<= 4;
     }
     m4 = 0xFF;
-    while((m & BIT(10)) == 0) {
-        if((used.hi & m4) != 0) {
+    while ((m & BIT(10)) == 0) {
+        if ((used.hi & m4) != 0) {
             segen |= m;
         }
         m <<= 1;
@@ -1176,10 +1176,10 @@ uint32_t LCD_Config(uint32_t presc, uint32_t div) {
                   _LCD_DISPCTRL_VLCDSEL_MASK | _LCD_DISPCTRL_CONCONF_MASK);
 
     // 8 common pins: LCD_COM7-LCD_COM4 (SEG23-SEG20) . LCD_COM3-LCD_COM0
-    dispctrl |= (LCD_DISPCTRL_MUX_QUADRUPLEX    // QUADRUPLEX+MUXE -> OCTAPLEX
-                 | LCD_DISPCTRL_MUXE            //
-                 | LCD_DISPCTRL_BIAS_ONEFOURTH  // 1/4 bias
-                 | LCD_DISPCTRL_WAVE_NORMAL);   // Normal wave
+    dispctrl |= (LCD_DISPCTRL_MUX_QUADRUPLEX   // QUADRUPLEX+MUXE -> OCTAPLEX
+                 | LCD_DISPCTRL_MUXE           //
+                 | LCD_DISPCTRL_BIAS_ONEFOURTH // 1/4 bias
+                 | LCD_DISPCTRL_WAVE_NORMAL);  // Normal wave
     LCD->DISPCTRL = dispctrl;
 
     /*
@@ -1208,24 +1208,23 @@ uint32_t LCD_Config(uint32_t presc, uint32_t div) {
 void LCD_WriteChar(uint8_t c, uint8_t pos) {
     uint32_t segments, m;
     uint8_t sn, comn, segn, comnrev;
-    SegEncoding_t s[8] = {{0, 0}, {0, 0}, {0, 0}, {0, 0},
-                          {0, 0}, {0, 0}, {0, 0}, {0, 0}};
+    SegEncoding_t s[8] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};
 
-    if(pos < 1 || pos > 14)
+    if (pos < 1 || pos > 14)
         return;
     /*
      * looks for segments to be lit
      * table contains only character with
      */
-    if(pos >= 1 && pos <= 7)
+    if (pos >= 1 && pos <= 7)
         segments = segments14forchar[c - ' '];
-    else if(pos >= 8 && pos <= 11)
+    else if (pos >= 8 && pos <= 11)
         segments = segments7forchar[c - ' '];
-    else if(pos == 12)
+    else if (pos == 12)
         segments = GENBITMASK1(c - '0');
-    else if(pos == 13)
+    else if (pos == 13)
         segments = GENBITMASK1(c - '0');
-    else if(pos == 14)
+    else if (pos == 14)
         segments = GENBITMASK1(c - '0');
     else
         segments = 0;
@@ -1235,12 +1234,12 @@ void LCD_WriteChar(uint8_t c, uint8_t pos) {
      * variable 's'
      */
     sn = 0;
-    while(segments) {
-        if(segments & 1) {
+    while (segments) {
+        if (segments & 1) {
             m = tablcd[sn][pos];
             comn = GET_COMMON(m);
             segn = GET_SEG(m);
-            comn = com_encoding[comn];  // it is reversed on STK3700
+            comn = com_encoding[comn]; // it is reversed on STK3700
             s[comn].hi |= seg_encoding[segn].hi;
             s[comn].lo |= seg_encoding[segn].lo;
         }
@@ -1252,7 +1251,7 @@ void LCD_WriteChar(uint8_t c, uint8_t pos) {
      */
 #ifndef LCD_EMULATION
     LCD_FREEZE;
-    for(comn = 0; comn < 8; comn++) {
+    for (comn = 0; comn < 8; comn++) {
         comnrev = com_encoding[comn];
         SEGDATALOW[comn] =
             (SEGDATALOW[comn] & ~tablcdclear[pos][comnrev].lo) | s[comn].lo;
@@ -1263,7 +1262,7 @@ void LCD_WriteChar(uint8_t c, uint8_t pos) {
     }
     LCD_UNFREEZE;
 #else
-    for(comn = 0; comn < 8; comn++) {
+    for (comn = 0; comn < 8; comn++) {
         comnrev = com_encoding[comn];
         lcd[comn].lo =
             (lcd[comn].lo & ~tablcdclear[pos][comnrev].lo) | s[comn].lo;
@@ -1284,8 +1283,8 @@ void LCD_WriteChar(uint8_t c, uint8_t pos) {
 void LCD_WriteAlphanumericDisplay(char *s) {
     int pos;
 
-    for(pos = 1; pos <= 7; pos++) {
-        if(*s) {
+    for (pos = 1; pos <= 7; pos++) {
+        if (*s) {
             LCD_WriteChar(*s++, pos);
         } else {
             LCD_WriteChar(' ', pos);
@@ -1304,8 +1303,8 @@ void LCD_WriteAlphanumericDisplay(char *s) {
 void LCD_WriteNumericDisplay(char *s) {
     int pos;
 
-    for(pos = 8; pos <= 11; pos++) {
-        if(*s) {
+    for (pos = 8; pos <= 11; pos++) {
+        if (*s) {
             LCD_WriteChar(*s++, pos);
         } else {
             LCD_WriteChar(' ', pos);
@@ -1325,8 +1324,8 @@ void LCD_WriteNumericDisplay(char *s) {
 void LCD_WriteString(char *s) {
     int pos;
 
-    for(pos = 1; pos <= 11; pos++) {
-        if(*s) {
+    for (pos = 1; pos <= 11; pos++) {
+        if (*s) {
             LCD_WriteChar(*s++, pos);
         } else {
             LCD_WriteChar(' ', pos);
@@ -1341,7 +1340,7 @@ void LCD_WriteString(char *s) {
 void LCD_ClearAll(void) {
     int comn;
     LCD_FREEZE;
-    for(comn = 0; comn < 8; comn++) {
+    for (comn = 0; comn < 8; comn++) {
 #ifdef LCD_EMULATION
         lcd[comn].hi = 0;
         lcd[comn].lo = 0;
@@ -1360,7 +1359,7 @@ void LCD_ClearAll(void) {
 void LCD_SetAll(void) {
     int comn;
     LCD_FREEZE;
-    for(comn = 0; comn < 8; comn++) {
+    for (comn = 0; comn < 8; comn++) {
 #ifdef LCD_EMULATION
         lcd[comn].hi = 0xFF;
         lcd[comn].lo = 0xFFFFFFFF;
@@ -1383,7 +1382,7 @@ static uint32_t ln2(uint32_t x) {
     uint32_t v;
 
     v = 1;
-    while(v < x) {
+    while (v < x) {
         v <<= 1;
         n++;
     }
@@ -1416,7 +1415,7 @@ void LCD_SetVoltage(uint32_t source, uint32_t div, uint32_t level) {
     uint32_t d;
     uint32_t lcdctrl, dispctrl;
 
-    if(source == LCD_USE_VDD) {
+    if (source == LCD_USE_VDD) {
         // Set LCD to use VDD
         LCD->DISPCTRL = (LCD->DISPCTRL & ~_LCD_DISPCTRL_VLCDSEL_MASK) |
                         _LCD_DISPCTRL_VLCDSEL_VDD;
@@ -1448,7 +1447,7 @@ void LCD_SetVoltage(uint32_t source, uint32_t div, uint32_t level) {
     LCD->DISPCTRL = dispctrl;
     CMU->LCDCTRL = lcdctrl;
     // Before exiting, reenable
-    CMU->LCDCTRL |= CMU_LCDCTRL_VBOOSTEN;  // Reenable VBoost
+    CMU->LCDCTRL |= CMU_LCDCTRL_VBOOSTEN; // Reenable VBoost
 
     // Set LCD to use Boost
     LCD->DISPCTRL = (LCD->DISPCTRL & ~_LCD_DISPCTRL_VLCDSEL_MASK) |
@@ -1485,8 +1484,8 @@ void LCD_SetContrast(uint32_t level, uint32_t ref) {
  * @brief Write a segment using segment mask
  */
 void LCD_WriteSegmentMask(uint32_t com, SegEncoding_t s, uint32_t v) {
-    com = com_encoding[com];  // it is reversed on STK3700
-    if(v) {                   /* Set */
+    com = com_encoding[com]; // it is reversed on STK3700
+    if (v) {                 /* Set */
         SEGDATALOW[com] |= s.lo;
         SEGDATAHIGH[com] |= s.hi;
     } else { /* Clear */
@@ -1502,7 +1501,7 @@ void LCD_WriteSegmentMask(uint32_t com, SegEncoding_t s, uint32_t v) {
 void LCD_WriteSegment2(uint32_t comn, uint32_t segn, uint32_t v) {
     SegEncoding_t s;
 
-    if(segn >= 32) {
+    if (segn >= 32) {
         s.hi = BIT(segn - 32);
         s.lo = 0;
     } else {
@@ -1535,40 +1534,40 @@ void LCD_WriteSpecial(LCD_Code_t code, uint8_t v) {
     uint8_t pos = 0;
     uint32_t segments;
 
-    if(code < LCD_GROUP) {
+    if (code < LCD_GROUP) {
         m = tablcdspecial[code];
         comn = GET_COMMON(m);
         segn = GET_SEG(m);
         seg = seg_encoding[segn];
         LCD_WriteSegmentMask(comn, seg, v);
     } else {
-        switch(code) {
-            case LCD_ARC:
-                pos = 12;
-                segments = GENBITMASK1(v);
-                break;
-            case LCD_BAT:
-                pos = 13;
-                segments = GENBITMASK1(v);
-                break;
-            case LCD_TARGET:
-                pos = 14;
-                segments = GENBITMASK1(v);
-                break;
-            default:
-                segments = 0;
+        switch (code) {
+        case LCD_ARC:
+            pos = 12;
+            segments = GENBITMASK1(v);
+            break;
+        case LCD_BAT:
+            pos = 13;
+            segments = GENBITMASK1(v);
+            break;
+        case LCD_TARGET:
+            pos = 14;
+            segments = GENBITMASK1(v);
+            break;
+        default:
+            segments = 0;
         }
         /*
          * scan segments bit mask and set corresponding bits in the segment
          * encoding variable 's'
          */
         sn = 0;
-        while(segments) {
-            if(segments & 1) {
+        while (segments) {
+            if (segments & 1) {
                 m = tablcd[sn][pos];
                 comn = GET_COMMON(m);
                 segn = GET_SEG(m);
-                comn = com_encoding[comn];  // it is reversed on STK3700
+                comn = com_encoding[comn]; // it is reversed on STK3700
                 s[comn].hi |= seg_encoding[segn].hi;
                 s[comn].lo |= seg_encoding[segn].lo;
             }
@@ -1580,7 +1579,7 @@ void LCD_WriteSpecial(LCD_Code_t code, uint8_t v) {
          */
 #ifndef LCD_EMULATION
         LCD_FREEZE;
-        for(comn = 0; comn < 8; comn++) {
+        for (comn = 0; comn < 8; comn++) {
             SEGDATALOW[comn] =
                 (SEGDATALOW[comn] & ~tablcdclear[comn][pos].lo) | s[comn].lo;
             SEGDATAHIGH[comn] =
@@ -1588,7 +1587,7 @@ void LCD_WriteSpecial(LCD_Code_t code, uint8_t v) {
         }
         LCD_UNFREEZE;
 #else
-        for(comn = 0; comn < 8; comn++) {
+        for (comn = 0; comn < 8; comn++) {
             lcd[comn].lo =
                 (lcd[comn].lo & ~tablcdclear[comn][pos].lo) | s[comn].lo;
             lcd[comn].hi =

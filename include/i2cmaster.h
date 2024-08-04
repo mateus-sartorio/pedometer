@@ -49,15 +49,11 @@
 #define I2CMASTER_PSTART (1 << 0)
 
 int I2CMaster_Init(I2C_TypeDef *unit, uint32_t speed, uint8_t loc);
-int I2CMaster_Send(I2C_TypeDef *unit, uint16_t address, uint8_t *data,
-                   uint32_t size);
-int I2CMaster_Receive(I2C_TypeDef *unit, uint16_t address, uint8_t *data,
-                      uint32_t maxsize);
+int I2CMaster_Send(I2C_TypeDef *unit, uint16_t address, uint8_t *data, uint32_t size);
+int I2CMaster_Receive(I2C_TypeDef *unit, uint16_t address, uint8_t *data, uint32_t maxsize);
 int I2CMaster_GetStatus(I2C_TypeDef *unit);
 int I2CMaster_GetState(I2C_TypeDef *unit);
 int I2CMaster_ConfigureSpeed(I2C_TypeDef *unit, uint32_t speed);
-int I2CMaster_SendAndThenReceive(I2C_TypeDef *unit, uint16_t address,
-                                 uint8_t *tdata, uint32_t tsize, uint8_t *rdata,
-                                 uint32_t *rmaxsize);
+int I2CMaster_SendAndThenReceive(I2C_TypeDef *unit, uint16_t address, uint8_t *tdata, uint32_t tsize, uint8_t *rdata, uint32_t *rmaxsize);
 
 #endif // I2CMASTER_H
