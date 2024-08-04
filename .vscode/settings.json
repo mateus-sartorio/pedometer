@@ -7,6 +7,11 @@
         "stdint.h": "c",
         "uart.h": "c",
         "led.h": "c",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "clock_efm32gg_ext.h": "c",
+        "efm32gg_gpio.h": "c",
+        "em_cmu.h": "c",
+        "em_gpio.h": "c",
+        "em_chip.h": "c"
     }
 }
