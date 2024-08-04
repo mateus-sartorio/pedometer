@@ -27,7 +27,7 @@
 #define MPU_WHO_AM_I 0x75
 
 int main(void) {
-    int a = 2;
+    int result = I2CMaster_Init(I2C1, 400, 0);
 
     return 0;
 }
