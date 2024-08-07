@@ -1,13 +1,10 @@
-BasedOnStyle: LLVM
-IndentWidth: 4
-TabWidth: 4
+BasedOnStyle: Google
+BreakBeforeBraces: Attach
+AllowShortBlocksOnASingleLine: Always
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: All
+IndentWidth: 2
+ContinuationIndentWidth: 2
+TabWidth: 2
 UseTab: Never
-ColumnLimit: 0
-BraceWrapping:
-  AfterFunction: false
-  AfterClass: false
-  AfterControlStatement: false
-  AfterNamespace: false
-  BeforeCatch: false
-  BeforeElse: false
-  IndentBraces: false

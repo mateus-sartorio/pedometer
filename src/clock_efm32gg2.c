@@ -1,5 +1,5 @@
 /**
- * @file    clock_efm32gg-ext.c
+ * @file    clock_efm32gg2.c
  * @brief   Additional CMSIS-like routines to control clock settings
  *          in EFM32GG devices.
  * @version 1.0
@@ -8,12 +8,13 @@
 
 #include <stdint.h>
 /*
- * Including this file, it is possible to define which processor using command
- * line E.g. -DEFM32GG995F1024 The alternative is to include the processor
- * specific file directly #include "efm32gg995f1024.h"
+ * Including this file, it is possible to define which processor using command line
+ * E.g. -DEFM32GG995F1024
+ * The alternative is to include the processor specific file directly
+ * #include "efm32gg995f1024.h"
  */
-#include "../include/clock_efm32gg_ext.h"
-#include "em_device.h"
+#include "../include/clock_efm32gg2.h"
+#include "../include/em_device.h"
 
 /**
  * @note            If Symbol for Crystal frequency not defined, define it.
@@ -24,22 +25,41 @@
 #endif
 
 /**
- * @macro      GETBYTEFROMWORD
  * @brief      get a BYTE at address WORD + POS
  */
 
 #define GETBYTEFROMWORD(WORD, POS) *((uint8_t *)(WORD) + (POS))
 
 /**
- * @function        GetProdRev
+ * @brief   Default size for callback table
+ */
+
+#ifndef CALLBACKS_MAX
+#define CALLBACKS_MAX 10
+#endif
+
+/**
+ *  @brief  call back table
+ */
+
+//{
+typedef struct {
+    uint32_t clockchanged;  //< bit mask specifying with clock has changed
+    void (*pre)(uint32_t);  //< Called BEFORE the clock change
+    void (*post)(uint32_t); //< Called AFTER the clock change
+} callbacks_t;
+
+static callbacks_t callbacks[CALLBACKS_MAX] = {0};
+//}
+
+/**
  * @brief           Inline function to get the chip's Production Revision.
  *
- * @note            From Silicon Labs system_efm32gg.c. It is a static function
- * there and it is needed here to configure the device
+ * @note            From Silicon Labs system_efm32gg.c. It is a static function there
+ *                  and it is needed here to configure the device
  */
 __STATIC_INLINE uint8_t GetProdRev(void) {
-    return ((DEVINFO->PART & _DEVINFO_PART_PROD_REV_MASK) >>
-            _DEVINFO_PART_PROD_REV_SHIFT);
+    return ((DEVINFO->PART & _DEVINFO_PART_PROD_REV_MASK) >> _DEVINFO_PART_PROD_REV_SHIFT);
 }
 
 /**
@@ -48,7 +68,8 @@ __STATIC_INLINE uint8_t GetProdRev(void) {
  *
  * @note       to find the power of 2, use 1<<result
  */
-static uint32_t nearestpower2exp(uint32_t n) {
+static uint32_t
+nearestpower2exp(uint32_t n) {
     uint32_t w = 1;
     uint32_t e = 0;
     uint32_t err1 = n;
@@ -60,6 +81,7 @@ static uint32_t nearestpower2exp(uint32_t n) {
             err1 = w - n;
         else
             err1 = n - w;
+
         if (err2 < err1)
             break;
         w <<= 1;
@@ -72,14 +94,82 @@ static uint32_t nearestpower2exp(uint32_t n) {
     return e - 1;
 }
 
+/*
+ * @brief   Register callback routines.
+ *
+ * @note    The pre functions is called before the frequency change
+ *          and post, after the change. The clock parameter
+ */
+
+int ClockRegisterCallback(uint32_t clockchanged, void (*pre)(uint32_t), void (*post)(uint32_t)) {
+    int i;
+
+    for (i = 0; (i < CALLBACKS_MAX) && (callbacks[i].clockchanged); i++) {
+    }
+
+    if (i >= CALLBACKS_MAX)
+        return -1;
+
+    // Propagate clock changes along the clock tree
+
+    if (clockchanged & CLOCK_CHANGED_HFCORECLK) {
+        clockchanged |= CLOCK_CHANGED_HFCLK;
+    }
+    if (clockchanged & CLOCK_CHANGED_HFPERCLK) {
+        clockchanged |= CLOCK_CHANGED_HFCLK;
+    }
+    if (clockchanged & CLOCK_CHANGED_HFCORECLKLE) {
+        clockchanged |= CLOCK_CHANGED_HFCLK | CLOCK_CHANGED_HFCORECLK;
+    }
+
+    callbacks[i].clockchanged = clockchanged;
+    callbacks[i].pre = pre;
+    callbacks[i].post = post;
+    return i;
+}
+
+/*
+ * @brief   Call callback routines BEFORE frequency change
+ *
+ * @note
+ */
+
+int ClockProcessPreChange(uint32_t clockchanged) {
+    int i;
+
+    for (i = 0; i < CALLBACKS_MAX; i++) {
+        if (callbacks[i].clockchanged & clockchanged && callbacks[i].pre) {
+            callbacks[i].pre(clockchanged);
+        }
+    }
+    return 0;
+}
+
+/*
+ * @brief   Call callback routines AFTER frequency change
+ *
+ * @note
+ */
+
+int ClockProcessPostChange(uint32_t clockchanged) {
+    int i;
+
+    for (i = 0; i < CALLBACKS_MAX; i++) {
+        if (callbacks[i].clockchanged & clockchanged && callbacks[i].post) {
+            callbacks[i].post(clockchanged);
+        }
+    }
+    return 0;
+}
+
 /**
  * @brief   Set the clock frequency and source
  *
- * @note    This function is provided to make it easier to configure clock
- * frequency and source.
+ * @note    This function is provided to make it easier to configure clock frequency
+ *          and source.
  *
- * @note    There are two main clock signals in a EMF32GG: HFPERCLK and
- * HFCORECLK Both are derived from a HFCLK signal.
+ * @note    There are two main clock signals in a EMF32GG: HFPERCLK and HFCORECLK
+ *          Both are derived from a HFCLK signal.
  *
  * @note    This function configures the HFCLK
  *
@@ -91,17 +181,22 @@ static uint32_t nearestpower2exp(uint32_t n) {
  *
  * @param[in] source
  *   CLOCK_LFXO, CLOCK_LFRC, CLOCK_HFRCO, CLOCK_HFXO,
- * @param[in] freq
- *   LFXO frequency in Hz used for target.
+ * @param[in] hclkdiv
+ *   Divisor used to generate HCLK
+ * @param[in] corediv
+ *   Divisor used to generate the Core Clock (additional divisor)
  */
 
-uint32_t SystemCoreClockSet(ClockSource_t source, uint32_t hclkdiv,
-                            uint32_t corediv) {
+uint32_t
+ClockSetCoreClock(ClockSource_t source, uint32_t hclkdiv, uint32_t corediv) {
     uint32_t basefreq;
     uint32_t hclkfreq;
     uint8_t tuning;
     uint32_t band;
     uint32_t divcode;
+
+    /* Call registered functions for attached peripherals */
+    ClockProcessPreChange(CLOCK_CHANGED_HFCLK | CLOCK_CHANGED_HFCORECLK);
 
     // Put hclkdiv in valid range
     if (hclkdiv > 8)
@@ -109,8 +204,8 @@ uint32_t SystemCoreClockSet(ClockSource_t source, uint32_t hclkdiv,
     if (hclkdiv < 1)
         hclkdiv = 1;
 
-    // Prepare for worst case
-    ClockConfigureForFrequency(EFM32_HFXO_FREQ);
+    // Prepare system for worst case
+    ClockConfigureSystemForClockFrequency(EFM32_HFXO_FREQ);
 
     // Set HFCLK divisor to 1
     CMU->CTRL = (CMU->CTRL & ~(_CMU_CTRL_HFCLKDIV_MASK));
@@ -251,19 +346,17 @@ uint32_t SystemCoreClockSet(ClockSource_t source, uint32_t hclkdiv,
     }
 
     /*
-     * Set HFCLK divisor to give value
+     * Set HFCLK divisor to given value
      */
 
     // HFCLK divisor encoded into a 0 to 7 range
     hclkdiv--;
 
     // Set divisor in CTRL register
-    CMU->CTRL = (CMU->CTRL & ~(_CMU_CTRL_HFCLKDIV_MASK)) |
-                (hclkdiv << _CMU_CTRL_HFCLKDIV_SHIFT);
+    CMU->CTRL = (CMU->CTRL & ~(_CMU_CTRL_HFCLKDIV_MASK)) | (hclkdiv << _CMU_CTRL_HFCLKDIV_SHIFT);
 
     /*
-     * Set Core Clock (HFCORECLK) and HF Peripheral Clock (HFPERCLK) to given
-     * value
+     * Set Core Clock (HFCORECLK) and HF Peripheral Clock (HFPERCLK) to given value
      */
 
     // Divisors are encoded as a power of 2 exponent
@@ -271,11 +364,8 @@ uint32_t SystemCoreClockSet(ClockSource_t source, uint32_t hclkdiv,
     divcode = nearestpower2exp(corediv);
 
     // Set divisors in HFCORECLKDIV and HFPERCLKDIV registers
-    CMU->HFCORECLKDIV =
-        (CMU->HFCORECLKDIV & ~_CMU_HFCORECLKDIV_HFCORECLKDIV_MASK) |
-        (divcode << _CMU_HFCORECLKDIV_HFCORECLKDIV_SHIFT);
-    CMU->HFPERCLKDIV = (CMU->HFPERCLKDIV & ~_CMU_HFPERCLKDIV_HFPERCLKDIV_MASK) |
-                       (divcode << _CMU_HFPERCLKDIV_HFPERCLKDIV_SHIFT);
+    CMU->HFCORECLKDIV = (CMU->HFCORECLKDIV & ~_CMU_HFCORECLKDIV_HFCORECLKDIV_MASK) | (divcode << _CMU_HFCORECLKDIV_HFCORECLKDIV_SHIFT);
+    CMU->HFPERCLKDIV = (CMU->HFPERCLKDIV & ~_CMU_HFPERCLKDIV_HFPERCLKDIV_MASK) | (divcode << _CMU_HFPERCLKDIV_HFPERCLKDIV_SHIFT);
 
     /*
      * Update global SystemCoreClock variable
@@ -285,11 +375,11 @@ uint32_t SystemCoreClockSet(ClockSource_t source, uint32_t hclkdiv,
     /*
      * Optimize configuration (Flash wait states, etc) for set clock frequency
      */
-    ClockConfigureForFrequency(SystemCoreClock);
+    ClockConfigureSystemForClockFrequency(SystemCoreClock);
 
-    /*
-     *
-     */
+    /* Call registered functions for attached peripherals */
+    ClockProcessPostChange(CLOCK_CHANGED_HFCLK | CLOCK_CHANGED_HFCORECLK);
+
     return hclkfreq / (1 << divcode);
 }
 
@@ -304,7 +394,8 @@ uint32_t SystemCoreClockSet(ClockSource_t source, uint32_t hclkdiv,
  * @note    It returns the base frequency
  */
 
-uint32_t ClockGetConfiguration(ClockConfiguration_t *p) {
+uint32_t
+ClockGetConfiguration(ClockConfiguration_t *p) {
     uint32_t basefreq = 0;
     uint32_t status;
     uint32_t hclkfreq, hclkdiv;
@@ -363,11 +454,9 @@ uint32_t ClockGetConfiguration(ClockConfiguration_t *p) {
     }
 
     hclkfreq = basefreq / (hclkdiv + 1);
-    corediv = (CMU->HFCORECLKDIV & _CMU_HFCORECLKDIV_HFCORECLKDIV_MASK) >>
-              _CMU_HFCORECLKDIV_HFCORECLKDIV_SHIFT;
+    corediv = (CMU->HFCORECLKDIV & _CMU_HFCORECLKDIV_HFCORECLKDIV_MASK) >> _CMU_HFCORECLKDIV_HFCORECLKDIV_SHIFT;
     corefreq = hclkfreq / (1U << corediv);
-    perdiv = (CMU->HFPERCLKDIV & _CMU_HFPERCLKDIV_HFPERCLKDIV_MASK) >>
-             _CMU_HFPERCLKDIV_HFPERCLKDIV_SHIFT;
+    perdiv = (CMU->HFPERCLKDIV & _CMU_HFPERCLKDIV_HFPERCLKDIV_MASK) >> _CMU_HFPERCLKDIV_HFPERCLKDIV_SHIFT;
     perfreq = hclkfreq / (1U << perdiv);
 
     if (p) {
@@ -375,10 +464,12 @@ uint32_t ClockGetConfiguration(ClockConfiguration_t *p) {
         p->basefreq = basefreq;
         p->hclkdiv = hclkdiv + 1;
         p->hclkfreq = hclkfreq;
-        p->corefreq = corefreq;
-        p->corediv = 1U << corediv;
-        p->perfreq = perfreq;
-        p->perdiv = 1U << perdiv;
+        p->hfcoreclkfreq = corefreq;
+        p->hfcoreclkdiv = 1U << corediv;
+        p->hfcoreclkdivcode = corediv;
+        p->hfperclkfreq = perfreq;
+        p->hfperclkdiv = 1U << perdiv;
+        p->hfperclkdivcode = perdiv;
     }
 
     return basefreq;
@@ -395,37 +486,30 @@ uint32_t ClockGetConfiguration(ClockConfiguration_t *p) {
  *  Clock       Flash wait states                       HFCLKLE < 16
  *  16 MHz      WS0/WS0SCBTP/WS1/WS1SCBTP/WS2/WS2SCBTP  BOOSTUPTO32MHZ (1)
  *  32 MHz      WS1/WS1SCBTP/WS2/WS2SCBTP               BOOSTUPTO32MHZ (1)
- *  48 MHz      WS2/WS2SCBTP                            HFCORECLKLEDIV(2)
- * BOOSTABOVE32MHZ
+ *  48 MHz      WS2/WS2SCBTP                            HFCORECLKLEDIV(2)  BOOSTABOVE32MHZ
  *
  *  @note   Default is BOOSTUPTO32MHZ in CMU_CTRL
  *
  * @note    You can set HFCORECLKLEDIV in CMU_HFCORECLKDIV or HFLE in CMU_CTRL
  */
 
-uint32_t ClockConfigureForFrequency(uint32_t freq) {
+uint32_t
+ClockConfigureSystemForClockFrequency(uint32_t freq) {
     uint32_t newreadctrl;
     uint32_t newctrl;
 
     newreadctrl = MSC->READCTRL;
     newctrl = CMU->CTRL;
     // Clear fields
-    newreadctrl &= ~(MSC_READCTRL_MODE_WS0 | MSC_READCTRL_MODE_WS1 |
-                     MSC_READCTRL_MODE_WS2 | MSC_READCTRL_MODE_WS0SCBTP |
-                     MSC_READCTRL_MODE_WS1SCBTP | MSC_READCTRL_MODE_WS2SCBTP);
+    newreadctrl &= ~(MSC_READCTRL_MODE_WS0 | MSC_READCTRL_MODE_WS1 | MSC_READCTRL_MODE_WS2 | MSC_READCTRL_MODE_WS0SCBTP | MSC_READCTRL_MODE_WS1SCBTP | MSC_READCTRL_MODE_WS2SCBTP);
     newctrl &= ~(_CMU_CTRL_HFXOBUFCUR_MASK);
 
     // Set fields
     if (freq <= 16000000UL) {
-        newreadctrl |=
-            (MSC_READCTRL_MODE_WS0 | MSC_READCTRL_MODE_WS1 |
-             MSC_READCTRL_MODE_WS2 | MSC_READCTRL_MODE_WS0SCBTP |
-             MSC_READCTRL_MODE_WS1SCBTP | MSC_READCTRL_MODE_WS2SCBTP);
+        newreadctrl |= (MSC_READCTRL_MODE_WS0 | MSC_READCTRL_MODE_WS1 | MSC_READCTRL_MODE_WS2 | MSC_READCTRL_MODE_WS0SCBTP | MSC_READCTRL_MODE_WS1SCBTP | MSC_READCTRL_MODE_WS2SCBTP);
         newctrl |= CMU_CTRL_HFXOBUFCUR_BOOSTUPTO32MHZ;
     } else if (freq <= 32000000UL) {
-        newreadctrl |=
-            (MSC_READCTRL_MODE_WS1 | MSC_READCTRL_MODE_WS2 |
-             MSC_READCTRL_MODE_WS1SCBTP | MSC_READCTRL_MODE_WS2SCBTP);
+        newreadctrl |= (MSC_READCTRL_MODE_WS1 | MSC_READCTRL_MODE_WS2 | MSC_READCTRL_MODE_WS1SCBTP | MSC_READCTRL_MODE_WS2SCBTP);
         newctrl |= CMU_CTRL_HFXOBUFCUR_BOOSTUPTO32MHZ;
     } else { // Maximum is 48 MHz
         newreadctrl |= (MSC_READCTRL_MODE_WS2 | MSC_READCTRL_MODE_WS2SCBTP);
@@ -438,87 +522,81 @@ uint32_t ClockConfigureForFrequency(uint32_t freq) {
     return freq;
 }
 
-/*
- * @brief   Set the HF Clock divisor considering the limits
- *          to
- * @note    It configure first to the HFXO and then to the desired
- *          frequency
- *
- */
-
-uint32_t ClockSetHFClockDivisor(uint32_t div) {
-
-    // Put div in valid range
-    if (div > 8)
-        div = 8;
-    if (div < 1)
-        div = 1;
-
-    // Configure for worst case
-    ClockConfigureForFrequency(EFM32_HFXO_FREQ);
-
-    /* Set HFCLK divisor to give value */
-    div--;
-    CMU->CTRL = (CMU->CTRL & ~(_CMU_CTRL_HFCLKDIV_MASK)) |
-                (div << _CMU_CTRL_HFCLKDIV_SHIFT);
-
-    // Update global SystemCoreClock variable
-    SystemCoreClockUpdate();
-
-    // Optime for set clock frequency
-    ClockConfigureForFrequency(SystemCoreClock);
-
-    return SystemCoreClock;
-}
-
 /**
  * @brief       Change prescalers for Core and Peripheral Clock
  *
- * @param       corediv: prescaler for HFCORECLOCK
- * @param       perdiv:  prescaler for HFPERCLOCK
+ * @param       hclkdiv: prescaler for HCLK clock
+ * @param       corediv: prescaler for HFCORECLOCK from HCLK
+ * @param       perdiv:  prescaler for HFPERCLOCK from HCLK
+ * @param       cloreclkdiv
  *
- * @note        Prescalers must be a power of 2 in the range [1..512]. If it is
- * not, it will be rounded
+ * @note        Prescalers must be a power of 2 in the range [1..512]. If it is not,
+ *              it will be rounded
  *
  */
 
-uint32_t ClockSetPrescalers(uint32_t corediv, uint32_t perdiv) {
-    uint32_t c, p;
+uint32_t
+ClockSetPrescalers(uint32_t hclkdiv, uint32_t corediv, uint32_t perdiv, uint32_t coreclklediv) {
+    uint32_t c, p, div;
     const uint32_t COREDIVMASK = _CMU_HFCORECLKDIV_HFCORECLKDIV_MASK;
     const uint32_t PERDIVMASK = _CMU_HFPERCLKDIV_HFPERCLKDIV_MASK;
 
+    /* Call registered functions for attached peripherals */
+    ClockProcessPreChange(CLOCK_CHANGED_HFCORECLK | CLOCK_CHANGED_HFPERCLK);
+
     // Configure for worst case
-    ClockConfigureForFrequency(EFM32_HFXO_FREQ);
+    ClockConfigureSystemForClockFrequency(EFM32_HFXO_FREQ);
 
-    if (corediv == 0)
-        corediv = 1;
-    if (perdiv == 0)
-        perdiv = 1;
+    if (hclkdiv > 0) {
+        if (hclkdiv > 8)
+            hclkdiv = 8;
+        div = hclkdiv - 1;
+    }
 
-    c = nearestpower2exp(corediv);
-    if (c == 0)
-        c = 1;
-    if (c > 9)
-        c = 9;
+    if (corediv > 0) {
+        c = nearestpower2exp(corediv);
+        if (c == 0)
+            c = 1;
+        if (c > 9)
+            c = 9;
+    }
 
-    p = nearestpower2exp(perdiv);
-    if (p == 0)
-        p = 1;
-    if (p > 9)
-        p = 9;
+    if (perdiv > 0) {
+        p = nearestpower2exp(perdiv);
+        if (p == 0)
+            p = 1;
+        if (p > 9)
+            p = 9;
+    }
 
     // Configure for new frequency
 
-    CMU->HFCORECLKDIV = (CMU->HFCORECLKDIV & ~COREDIVMASK) |
-                        (c << _CMU_HFCORECLKDIV_HFCORECLKDIV_SHIFT);
-    CMU->HFPERCLKDIV = (CMU->HFPERCLKDIV & ~PERDIVMASK) |
-                       (p << _CMU_HFPERCLKDIV_HFPERCLKDIV_SHIFT);
+    if (hclkdiv > 0) {
+        CMU->CTRL = (CMU->CTRL & ~(_CMU_CTRL_HFCLKDIV_MASK)) | (div << _CMU_CTRL_HFCLKDIV_SHIFT);
+    }
+    if (corediv > 0) {
+        CMU->HFCORECLKDIV = (CMU->HFCORECLKDIV & ~COREDIVMASK) | (c << _CMU_HFCORECLKDIV_HFCORECLKDIV_SHIFT);
+    }
+    if (perdiv > 0) {
+        CMU->HFPERCLKDIV = (CMU->HFPERCLKDIV & ~PERDIVMASK) | (p << _CMU_HFPERCLKDIV_HFPERCLKDIV_SHIFT);
+    }
+
+    if (coreclklediv > 0) {
+        if (coreclklediv == 2) {
+            CMU->HFCORECLKDIV &= ~CMU_HFCORECLKDIV_HFCORECLKLEDIV;
+        } else if (coreclklediv == 2) {
+            CMU->HFCORECLKDIV &= CMU_HFCORECLKDIV_HFCORECLKLEDIV;
+        }
+    }
 
     // Update global SystemCoreClock variable
     SystemCoreClockUpdate();
 
-    // Optime for set clock frequency
-    ClockConfigureForFrequency(SystemCoreClock);
+    // Optimize for set clock frequency
+    ClockConfigureSystemForClockFrequency(SystemCoreClock);
+
+    /* Call registered functions for attached peripherals */
+    ClockProcessPostChange(CLOCK_CHANGED_HFCORECLK | CLOCK_CHANGED_HFPERCLK);
 
     return SystemCoreClock;
 }
@@ -526,18 +604,19 @@ uint32_t ClockSetPrescalers(uint32_t corediv, uint32_t perdiv) {
 /**
  * @brief       Configure Low Frequency CLock A
  *
- * @param       source:  CLOCK_LFRCO, CLOCK_ULFRCO,
- * CLOCK_LFXO,CLOCK_HFCORECLOCK_2
+ * @param       source:  CLOCK_LFRCO, CLOCK_ULFRCO, CLOCK_LFXO,CLOCK_HFCORECLOCK_2
  *
- * @note        CLOCK_HFCORECLOCK_2 can mean SystemCoreClock/2 or
- * SystemCoreClock/4 if SystemCoreClock > 32 MHz, then the divider must be 4
+ * @note        CLOCK_HFCORECLOCK_2 can mean SystemCoreClock/2 or SystemCoreClock/4
+ *              if SystemCoreClock > 32 MHz, then the divider must be 4
  */
 
-uint32_t ClockSetLFCLKA(ClockSource_t source) {
+uint32_t
+ClockSetLFCLKA(ClockSource_t source) {
     uint32_t lfclocksel;
     uint32_t freq;
 
-    /* If peripherals attached are enabled, disable them */
+    /* Call registered functions for attached peripherals */
+    ClockProcessPreChange(CLOCK_CHANGED_LFCLKB);
 
     /* Original configuration */
     lfclocksel = CMU->LFCLKSEL;
@@ -586,7 +665,8 @@ uint32_t ClockSetLFCLKA(ClockSource_t source) {
         return 0;
     }
 
-    /* Reenable attached peripherals */
+    /* Reconfigure attached peripherals, by calling registered functions */
+    ClockProcessPostChange(CLOCK_CHANGED_LFCLKA);
 
     /* Return frequency of LFACLK */
     return freq;
@@ -595,18 +675,19 @@ uint32_t ClockSetLFCLKA(ClockSource_t source) {
 /**
  * @brief       Configure Low Frequency CLock B
  *
- * @param       source:  CLOCK_LFRCO, CLOCK_ULFRCO,
- * CLOCK_LFXO,CLOCK_HFCORECLOCK_2
+ * @param       source:  CLOCK_LFRCO, CLOCK_ULFRCO, CLOCK_LFXO,CLOCK_HFCORECLOCK_2
  *
- * @note        CLOCK_HFCORECLOCK_2 can mean SystemCoreClock/2 or
- * SystemCoreClock/4 if SystemCoreClock > 32 MHz, then the divider must be 4
+ * @note        CLOCK_HFCORECLOCK_2 can mean SystemCoreClock/2 or SystemCoreClock/4
+ *              if SystemCoreClock > 32 MHz, then the divider must be 4
  */
 
-uint32_t ClockSetLFCLKB(ClockSource_t source) {
+uint32_t
+ClockSetLFCLKB(ClockSource_t source) {
     uint32_t lfclocksel;
     uint32_t freq;
 
-    /* If peripherals attached are enabled, disable them */
+    /* Call registered functions for attached peripherals */
+    ClockProcessPreChange(CLOCK_CHANGED_LFCLKB);
 
     /* Original configuration */
     lfclocksel = CMU->LFCLKSEL;
@@ -654,7 +735,8 @@ uint32_t ClockSetLFCLKB(ClockSource_t source) {
         return 0;
     }
 
-    /* Reenable attached peripherals */
+    /* Reconfigure attached peripherals, by calling registered functions */
+    ClockProcessPostChange(CLOCK_CHANGED_LFCLKB);
 
     /* Return frequency of LFACLK */
     return freq;
@@ -666,12 +748,13 @@ uint32_t ClockSetLFCLKB(ClockSource_t source) {
  * @note    Uses ClockGetConfiguration
  */
 
-uint32_t ClockGetPeripheralClockFrequency(void) {
+uint32_t
+ClockGetPeripheralClockFrequency(void) {
     ClockConfiguration_t clockconf;
 
     ClockGetConfiguration(&clockconf);
 
-    return clockconf.perfreq;
+    return clockconf.hfperclkfreq;
 }
 
 /*
@@ -680,10 +763,11 @@ uint32_t ClockGetPeripheralClockFrequency(void) {
  * @note    Uses ClockGetConfiguration
  */
 
-uint32_t ClockGetCoreClockFrequency(void) {
+uint32_t
+ClockGetCoreClockFrequency(void) {
     ClockConfiguration_t clockconf;
 
     ClockGetConfiguration(&clockconf);
 
-    return clockconf.corefreq;
+    return clockconf.hfcoreclkfreq;
 }
