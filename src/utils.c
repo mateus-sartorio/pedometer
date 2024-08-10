@@ -12,7 +12,7 @@ void reverse(char str[], int length) {
     }
 }
 
-char *itoa(int num, char *str, int base) {
+char* itoa(int num, char* str, int base) {
     int i = 0;
     int isNegative = 0;
 
@@ -47,4 +47,8 @@ char *itoa(int num, char *str, int base) {
     reverse(str, i);
 
     return str;
+}
+
+void delay(unsigned n) {
+    for (int i = 0; i < n; i++);
 }

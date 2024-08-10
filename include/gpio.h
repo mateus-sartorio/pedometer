@@ -9,22 +9,22 @@
 #include "em_device.h"
 #include <stdint.h>
 
-/**
- * @brief   When set, use DOUTCLR and DOUTSET for output
- *          When not, only DOUT is used in a Read-Modify-Write cyclus
- */
+ /**
+  * @brief   When set, use DOUTCLR and DOUTSET for output
+  *          When not, only DOUT is used in a Read-Modify-Write cyclus
+  */
 
 #define GPIO_ALTERNATE_OPERATIONS
 
-/**
- * @brief   Pointer to GPIO registers
- */
-typedef GPIO_P_TypeDef *GPIO_t;
+  /**
+   * @brief   Pointer to GPIO registers
+   */
+typedef GPIO_P_TypeDef* GPIO_t;
 
 /**
  * @brief   Pointers for GPIO ports
  */
-//@{
+ //@{
 static const GPIO_t GPIOA = &(GPIO->P[0]); // GPIOA
 static const GPIO_t GPIOB = &(GPIO->P[1]); // GPIOB
 static const GPIO_t GPIOC = &(GPIO->P[2]); // GPIOC
@@ -36,7 +36,7 @@ static const GPIO_t GPIOF = &(GPIO->P[5]); // GPIOF
 /**
  * @brief   mode options
  */
-//@{
+ //@{
 static const uint32_t GPIO_MODE_DISABLE = 0x0;
 static const uint32_t GPIO_MODE_INPUT = 0x1;
 static const uint32_t GPIO_MODE_INPUTPULL = 0x2;

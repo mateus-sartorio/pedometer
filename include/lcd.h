@@ -8,9 +8,9 @@
 #define LCD_H
 #include <stdint.h>
 
-/**
- * Symbols used in the WriteSpecial function
- */
+ /**
+  * Symbols used in the WriteSpecial function
+  */
 
 typedef enum {
     LCD_GECKO = 0,     // COM6 S00
@@ -83,9 +83,9 @@ uint32_t LCD_Config(uint32_t presc, uint32_t div);
 void LCD_ClearAll(void);
 void LCD_SetAll(void);
 void LCD_WriteChar(uint8_t c, uint8_t pos);
-void LCD_WriteString(char *s);
-void LCD_WriteAlphanumericDisplay(char *s);
-void LCD_WriteNumericDisplay(char *s);
+void LCD_WriteString(char* s);
+void LCD_WriteAlphanumericDisplay(char* s);
+void LCD_WriteNumericDisplay(char* s);
 void LCD_WriteSpecial(LCD_Code_t code, uint8_t v);
 
 uint32_t SetLFAClock(uint32_t clock);

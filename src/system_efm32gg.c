@@ -36,11 +36,11 @@
 
 #include "em_device.h"
 
-/*******************************************************************************
- ******************************   DEFINES   ************************************
- ******************************************************************************/
+ /*******************************************************************************
+  ******************************   DEFINES   ************************************
+  ******************************************************************************/
 
-/** LFRCO frequency, tuned to below frequency during manufacturing. */
+  /** LFRCO frequency, tuned to below frequency during manufacturing. */
 #define EFM32_LFRCO_FREQ (32768UL)
 #define EFM32_ULFRCO_FREQ (1000UL)
 
@@ -48,13 +48,13 @@
  **************************   LOCAL VARIABLES   ********************************
  ******************************************************************************/
 
-/* System oscillator frequencies. These frequencies are normally constant */
-/* for a target, but they are made configurable in order to allow run-time */
-/* handling of different boards. The crystal oscillator clocks can be set */
-/* compile time to a non-default value by defining respective EFM32_nFXO_FREQ */
-/* values according to board design. By defining the EFM32_nFXO_FREQ to 0, */
-/* one indicates that the oscillator is not present, in order to save some */
-/* SW footprint. */
+ /* System oscillator frequencies. These frequencies are normally constant */
+ /* for a target, but they are made configurable in order to allow run-time */
+ /* handling of different boards. The crystal oscillator clocks can be set */
+ /* compile time to a non-default value by defining respective EFM32_nFXO_FREQ */
+ /* values according to board design. By defining the EFM32_nFXO_FREQ to 0, */
+ /* one indicates that the oscillator is not present, in order to save some */
+ /* SW footprint. */
 
 #ifndef EFM32_HFXO_FREQ
 #define EFM32_HFXO_FREQ (48000000UL)
@@ -85,50 +85,50 @@ static uint32_t SystemLFXOClock = EFM32_LFXO_FREQ;
 /* Inline function to get the chip's Production Revision. */
 __STATIC_INLINE uint8_t GetProdRev(void) {
     return ((DEVINFO->PART & _DEVINFO_PART_PROD_REV_MASK) >>
-            _DEVINFO_PART_PROD_REV_SHIFT);
+        _DEVINFO_PART_PROD_REV_SHIFT);
 }
 
 /*******************************************************************************
  **************************   GLOBAL VARIABLES   *******************************
  ******************************************************************************/
 
-/**
- * @brief
- *   System System Clock Frequency (Core Clock).
- *
- * @details
- *   Required CMSIS global variable that must be kept up-to-date.
- */
+ /**
+  * @brief
+  *   System System Clock Frequency (Core Clock).
+  *
+  * @details
+  *   Required CMSIS global variable that must be kept up-to-date.
+  */
 uint32_t SystemCoreClock = 14000000UL;
 
 /*******************************************************************************
  **************************   GLOBAL FUNCTIONS   *******************************
  ******************************************************************************/
 
-/***************************************************************************/
-/**
- * @brief
- *   Get the current core clock frequency.
- *
- * @details
- *   Calculate and get the current core clock frequency based on the current
- *   configuration. Assuming that the SystemCoreClock global variable is
- *   maintained, the core clock frequency is stored in that variable as well.
- *   This function will however calculate the core clock based on actual HW
- *   configuration. It will also update the SystemCoreClock global variable.
- *
- * @note
- *   This is an EFM32 proprietary function, not part of the CMSIS definition.
- *
- * @return
- *   The current core clock frequency in Hz.
- ******************************************************************************/
+ /***************************************************************************/
+ /**
+  * @brief
+  *   Get the current core clock frequency.
+  *
+  * @details
+  *   Calculate and get the current core clock frequency based on the current
+  *   configuration. Assuming that the SystemCoreClock global variable is
+  *   maintained, the core clock frequency is stored in that variable as well.
+  *   This function will however calculate the core clock based on actual HW
+  *   configuration. It will also update the SystemCoreClock global variable.
+  *
+  * @note
+  *   This is an EFM32 proprietary function, not part of the CMSIS definition.
+  *
+  * @return
+  *   The current core clock frequency in Hz.
+  ******************************************************************************/
 uint32_t SystemCoreClockGet(void) {
     uint32_t ret;
 
     ret = SystemHFClockGet();
     ret >>= (CMU->HFCORECLKDIV & _CMU_HFCORECLKDIV_HFCORECLKDIV_MASK) >>
-            _CMU_HFCORECLKDIV_HFCORECLKDIV_SHIFT;
+        _CMU_HFCORECLKDIV_HFCORECLKDIV_SHIFT;
 
     /* Keep CMSIS variable up-to-date just in case */
     SystemCoreClock = ret;
@@ -149,7 +149,7 @@ uint32_t SystemCoreClockGet(void) {
  ******************************************************************************/
 uint32_t SystemMaxCoreClockGet(void) {
     return (EFM32_HFRCO_MAX_FREQ > EFM32_HFXO_FREQ ? EFM32_HFRCO_MAX_FREQ
-                                                   : EFM32_HFXO_FREQ);
+        : EFM32_HFXO_FREQ);
 }
 
 /***************************************************************************/
@@ -167,7 +167,7 @@ uint32_t SystemHFClockGet(void) {
     uint32_t ret;
 
     switch (CMU->STATUS & (CMU_STATUS_HFRCOSEL | CMU_STATUS_HFXOSEL |
-                           CMU_STATUS_LFRCOSEL | CMU_STATUS_LFXOSEL)) {
+        CMU_STATUS_LFRCOSEL | CMU_STATUS_LFXOSEL)) {
     case CMU_STATUS_LFXOSEL:
 #if (EFM32_LFXO_FREQ > 0)
         ret = SystemLFXOClock;
@@ -232,7 +232,7 @@ uint32_t SystemHFClockGet(void) {
     }
 
     return ret / (1U + ((CMU->CTRL & _CMU_CTRL_HFCLKDIV_MASK) >>
-                        _CMU_CTRL_HFCLKDIV_SHIFT));
+        _CMU_CTRL_HFCLKDIV_SHIFT));
 }
 
 /**************************************************************************/

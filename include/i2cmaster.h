@@ -19,101 +19,13 @@
 #include "em_device.h"
 #include <stdint.h>
 
-/* Pins used by I2C */
-#define I2CMASTER_LOC_0 (0)
-#define I2CMASTER_LOC_1 (1)
-#define I2CMASTER_LOC_2 (2)
-#define I2CMASTER_LOC_3 (3)
-#define I2CMASTER_LOC_4 (4)
-#define I2CMASTER_LOC_5 (5)
-#define I2CMASTER_LOC_6 (6)
-
-/**
- * @brief  Send routines
- */
-///@{
-int I2CMaster_Init(
-    I2C_TypeDef *unit,
-    uint32_t speed,
-    uint8_t loc);
-int I2CMaster_ConfigureSpeed(
-    I2C_TypeDef *unit,
-    uint32_t speed);
-int I2CMaster_GetStatus(
-    I2C_TypeDef *unit);
-int I2CMaster_GetState(
-    I2C_TypeDef *unit);
-int I2CMaster_Clear(
-    I2C_TypeDef *unit);
-///@}
-
-/**
- * @brief  Send routines
- */
-///@{
-int I2CMaster_Send(
-    I2C_TypeDef *unit,
-    uint16_t address,
-    uint8_t *data,
-    uint32_t size);
-int I2CMaster_SendStart(
-    I2C_TypeDef *unit,
-    uint16_t address,
-    uint8_t *data,
-    uint32_t size);
-int I2CMaster_SendGetStatus(
-    I2C_TypeDef *unit);
-///@}
-
-/**
- * @brief  Receive routines
- */
-///@{
-int I2CMaster_Receive(
-    I2C_TypeDef *unit,
-    uint16_t address,
-    uint8_t *data,
-    uint32_t rsize);
-int I2CMaster_ReceiveStart(
-    I2C_TypeDef *unit,
-    uint16_t address,
-    uint32_t rsize);
-int I2CMaster_ReceiveGetData(
-    I2C_TypeDef *unit,
-    uint16_t address,
-    uint8_t *data,
-    uint32_t size);
-int I2CMaster_ReceiveGetStatus(
-    I2C_TypeDef *unit);
-///@}
-
-/**
- * @brief Send-Receive routines
- */
-///@{
-int I2CMaster_SendReceive(
-    I2C_TypeDef *unit,
-    uint16_t address,
-    uint8_t *tdata,
-    uint32_t tsize,
-    uint8_t *rdata,
-    uint32_t rsize);
-int I2CMaster_SendReceiveStart(
-    I2C_TypeDef *unit,
-    uint16_t address,
-    uint8_t *tdata,
-    uint32_t tsize,
-    uint32_t rsize);
-int I2CMaster_SendReceiveGetStatus(
-    I2C_TypeDef *unit);
-int I2CMaster_SendReceiveGetData(
-    I2C_TypeDef *unit,
-    uint16_t address,
-    uint8_t *data,
-    uint32_t rsize);
-///@}
-int I2CMaster_Read(I2C_TypeDef *i2c, uint8_t address, uint8_t reg);
-
+ /**
+  * @brief  Send routines
+  */
+  ///@{
+int I2CMaster_Init(I2C_TypeDef* unit, uint32_t speed, uint8_t loc);
+int I2CMaster_ConfigureSpeed(I2C_TypeDef* unit, uint32_t speed);
 uint8_t I2C_MyRead(I2C_TypeDef* i2c, uint8_t address, uint8_t reg);
-int I2C_MyWrite(I2C_TypeDef *i2c, uint8_t address, uint8_t reg, uint8_t value);
+int I2C_MyWrite(I2C_TypeDef* i2c, uint8_t address, uint8_t reg, uint8_t value);
+
 #endif // I2CMASTER_H

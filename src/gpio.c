@@ -8,12 +8,12 @@
 #include "../include/gpio.h"
 #include <stdint.h>
 
-/**
- * @brief   Configure pins
- * @param   gpio: pointer to gpio registers
- * @param   pins: bit mask containing 1 in the position to be configured
- * @param   mode: GPIO_MODE_INPUT, GPIO_MODE_PUSHPULL, etc.
- */
+ /**
+  * @brief   Configure pins
+  * @param   gpio: pointer to gpio registers
+  * @param   pins: bit mask containing 1 in the position to be configured
+  * @param   mode: GPIO_MODE_INPUT, GPIO_MODE_PUSHPULL, etc.
+  */
 
 void GPIO_ConfigPins(GPIO_t gpio, uint32_t pins, uint32_t mode) {
     const uint32_t mask = 0xF; // Fields are 4 bits wide

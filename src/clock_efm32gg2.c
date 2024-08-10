@@ -7,49 +7,49 @@
  **/
 
 #include <stdint.h>
-/*
- * Including this file, it is possible to define which processor using command line
- * E.g. -DEFM32GG995F1024
- * The alternative is to include the processor specific file directly
- * #include "efm32gg995f1024.h"
- */
+ /*
+  * Including this file, it is possible to define which processor using command line
+  * E.g. -DEFM32GG995F1024
+  * The alternative is to include the processor specific file directly
+  * #include "efm32gg995f1024.h"
+  */
 #include "../include/clock_efm32gg2.h"
 #include "../include/em_device.h"
 
-/**
- * @note            If Symbol for Crystal frequency not defined, define it.
- * @note            Just in case.
- */
+  /**
+   * @note            If Symbol for Crystal frequency not defined, define it.
+   * @note            Just in case.
+   */
 #ifndef EFM32_HFXO_FREQ
 #define EFM32_HFXO_FREQ (48000000UL)
 #endif
 
-/**
- * @brief      get a BYTE at address WORD + POS
- */
+   /**
+    * @brief      get a BYTE at address WORD + POS
+    */
 
 #define GETBYTEFROMWORD(WORD, POS) *((uint8_t *)(WORD) + (POS))
 
-/**
- * @brief   Default size for callback table
- */
+    /**
+     * @brief   Default size for callback table
+     */
 
 #ifndef CALLBACKS_MAX
 #define CALLBACKS_MAX 10
 #endif
 
-/**
- *  @brief  call back table
- */
+     /**
+      *  @brief  call back table
+      */
 
-//{
+      //{
 typedef struct {
     uint32_t clockchanged;  //< bit mask specifying with clock has changed
     void (*pre)(uint32_t);  //< Called BEFORE the clock change
     void (*post)(uint32_t); //< Called AFTER the clock change
 } callbacks_t;
 
-static callbacks_t callbacks[CALLBACKS_MAX] = {0};
+static callbacks_t callbacks[CALLBACKS_MAX] = { 0 };
 //}
 
 /**
@@ -349,7 +349,7 @@ ClockSetCoreClock(ClockSource_t source, uint32_t hclkdiv, uint32_t corediv) {
      * Set HFCLK divisor to given value
      */
 
-    // HFCLK divisor encoded into a 0 to 7 range
+     // HFCLK divisor encoded into a 0 to 7 range
     hclkdiv--;
 
     // Set divisor in CTRL register
@@ -359,7 +359,7 @@ ClockSetCoreClock(ClockSource_t source, uint32_t hclkdiv, uint32_t corediv) {
      * Set Core Clock (HFCORECLK) and HF Peripheral Clock (HFPERCLK) to given value
      */
 
-    // Divisors are encoded as a power of 2 exponent
+     // Divisors are encoded as a power of 2 exponent
 
     divcode = nearestpower2exp(corediv);
 
@@ -395,7 +395,7 @@ ClockSetCoreClock(ClockSource_t source, uint32_t hclkdiv, uint32_t corediv) {
  */
 
 uint32_t
-ClockGetConfiguration(ClockConfiguration_t *p) {
+ClockGetConfiguration(ClockConfiguration_t* p) {
     uint32_t basefreq = 0;
     uint32_t status;
     uint32_t hclkfreq, hclkdiv;
@@ -440,16 +440,20 @@ ClockGetConfiguration(ClockConfiguration_t *p) {
             source = CLOCK_HFRCO_28MHZ;
             break;
         }
-    } else if (status & CMU_STATUS_LFRCOSEL) {
+    }
+    else if (status & CMU_STATUS_LFRCOSEL) {
         basefreq = 32768UL;
         source = CLOCK_LFRCO;
-    } else if (status & CMU_STATUS_LFXOSEL) {
+    }
+    else if (status & CMU_STATUS_LFXOSEL) {
         basefreq = 32768UL;
         source = CLOCK_LFXO;
-    } else if (status & CMU_STATUS_HFXOSEL) {
+    }
+    else if (status & CMU_STATUS_HFXOSEL) {
         basefreq = EFM32_HFXO_FREQ;
         source = CLOCK_HFXO;
-    } else {
+    }
+    else {
         source = CLOCK_NONE;
     }
 
@@ -508,10 +512,12 @@ ClockConfigureSystemForClockFrequency(uint32_t freq) {
     if (freq <= 16000000UL) {
         newreadctrl |= (MSC_READCTRL_MODE_WS0 | MSC_READCTRL_MODE_WS1 | MSC_READCTRL_MODE_WS2 | MSC_READCTRL_MODE_WS0SCBTP | MSC_READCTRL_MODE_WS1SCBTP | MSC_READCTRL_MODE_WS2SCBTP);
         newctrl |= CMU_CTRL_HFXOBUFCUR_BOOSTUPTO32MHZ;
-    } else if (freq <= 32000000UL) {
+    }
+    else if (freq <= 32000000UL) {
         newreadctrl |= (MSC_READCTRL_MODE_WS1 | MSC_READCTRL_MODE_WS2 | MSC_READCTRL_MODE_WS1SCBTP | MSC_READCTRL_MODE_WS2SCBTP);
         newctrl |= CMU_CTRL_HFXOBUFCUR_BOOSTUPTO32MHZ;
-    } else { // Maximum is 48 MHz
+    }
+    else { // Maximum is 48 MHz
         newreadctrl |= (MSC_READCTRL_MODE_WS2 | MSC_READCTRL_MODE_WS2SCBTP);
         newctrl |= CMU_CTRL_HFLE;
         newctrl |= CMU_CTRL_HFXOBUFCUR_BOOSTABOVE32MHZ;
@@ -584,7 +590,8 @@ ClockSetPrescalers(uint32_t hclkdiv, uint32_t corediv, uint32_t perdiv, uint32_t
     if (coreclklediv > 0) {
         if (coreclklediv == 2) {
             CMU->HFCORECLKDIV &= ~CMU_HFCORECLKDIV_HFCORECLKLEDIV;
-        } else if (coreclklediv == 2) {
+        }
+        else if (coreclklediv == 2) {
             CMU->HFCORECLKDIV &= CMU_HFCORECLKDIV_HFCORECLKLEDIV;
         }
     }
