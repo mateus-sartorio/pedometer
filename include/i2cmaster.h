@@ -114,5 +114,6 @@ int I2CMaster_SendReceiveGetData(
 ///@}
 int I2CMaster_Read(I2C_TypeDef *i2c, uint8_t address, uint8_t reg);
 
-int I2C_MyRead(I2C_TypeDef *i2c, uint8_t address, uint8_t reg);
+uint8_t I2C_MyRead(I2C_TypeDef* i2c, uint8_t address, uint8_t reg);
+int I2C_MyWrite(I2C_TypeDef *i2c, uint8_t address, uint8_t reg, uint8_t value);
 #endif // I2CMASTER_H

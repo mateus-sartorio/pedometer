@@ -31,7 +31,8 @@
  ******************************************************************************/
 
 #include "em_i2c.h"
-#if defined(I2C_COUNT) && (I2C_COUNT > 0)
+// #if defined(I2C_COUNT) && (I2C_COUNT > 0)
+#if 1
 
 #include "em_cmu.h"
 #include "em_bus.h"

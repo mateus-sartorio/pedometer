@@ -14,10 +14,11 @@
 
 enum states {
     IDLE,
-    SEND_DATA,
-    SEND_START,
+    SEND_DATA_1,
+    SEND_DATA_2,
+    SEND_DATA_3,
     RECEIVE_DATA,
-    ERROR
+    STOP
 };
 
 enum operation {
@@ -25,126 +26,278 @@ enum operation {
     READ = 1
 };
 
+enum operation_type {
+    GENERAL_READ,
+    GENERAL_WRITE
+};
+
 static enum states state = IDLE;
 static uint8_t send_address = 0;
 static uint8_t send_register = 0;
-static uint8_t data[10] = { 0 };
-static int bytes_sent = 0;
-static int bytes_received = 0;
+static uint8_t value_to_write = 0;
+static uint8_t data = 0;
 static const int BYTE_LIMIT = 6;
+static enum operation_type general_operation = GENERAL_WRITE;
 
-static void MyProcessInterrupt(I2C_TypeDef *i2c) {
-    switch (state) {
-    case IDLE:
-        // Clear all interrupts
-        i2c->IFC = _I2C_IFC_MASK;
+static void MyProcessInterrupt(I2C_TypeDef* i2c) {
+    if (general_operation == GENERAL_WRITE) {
+        switch (state)
+        {
+        case IDLE:
+            /* Disable interrupt sources when done */
+            i2c->IEN = 0;
 
-        break;
+            break;
 
-    case SEND_DATA:
-        if (i2c->IF & I2C_IF_NACK) {
-            state = ERROR;
-            goto error;
-        }
+        case SEND_DATA_1:
+            if (i2c->IF & I2C_IF_NACK)
+            {
+                state = STOP;
+                i2c->IFC = I2C_IFC_NACK;
+                i2c->CMD = I2C_CMD_STOP;
+            }
+            else if (i2c->IF & I2C_IF_ACK) {
+                i2c->IFC = I2C_IFC_ACK;
 
-        // Data was transmitted. Send next data
-        if(i2c->IF & I2C_IF_TXBL) {
-            if(bytes_sent < 1) {
+                state = SEND_DATA_2;
+
                 i2c->TXDATA = send_register;
-                bytes_sent++;
-                state = SEND_DATA;
             }
-            else {
-                state = SEND_START;
-                i2c->CMD = I2C_CMD_START;
-                i2c->TXDATA = (send_address << 1) | READ;
-                bytes_received = 0;
+
+            break;
+
+        case SEND_DATA_2:
+            if (i2c->IF & I2C_IF_NACK)
+            {
+                i2c->IFC = I2C_IFC_NACK;
+                state = STOP;
+                i2c->CMD = I2C_CMD_STOP;
             }
-        }
-        else {
-            state = ERROR;
-            goto error;
-        }
+            else if (i2c->IF & I2C_IF_ACK) {
+                i2c->IFC = I2C_IFC_ACK;
 
-        // Clear all interrupts
-        i2c->IFC = _I2C_IFC_MASK;
+                state = SEND_DATA_3;
 
-        break;
+                i2c->TXDATA = value_to_write;
+            }
 
-    case SEND_START:
-        if (i2c->IF & I2C_IF_ACK) {
-            state = RECEIVE_DATA;
-        }
-        else if (i2c->IF & I2C_IF_NACK) {
-            state = ERROR;
-            goto error;
-        }
+            break;
 
-        // Clear all interrupts
-        i2c->IFC = _I2C_IFC_MASK;
+        case SEND_DATA_3:
+            if (i2c->IF & I2C_IF_NACK)
+            {
+                i2c->IFC = I2C_IFC_NACK;
+                state = STOP;
+                i2c->CMD = I2C_CMD_STOP;
+            }
+            else if (i2c->IF & I2C_IF_ACK) {
+                i2c->IFC = I2C_IFC_ACK;
 
-        break;
+                state = IDLE;
 
-    case RECEIVE_DATA:
-        if (i2c->IF & I2C_IF_RXDATAV) {
-            if (bytes_received == BYTE_LIMIT) {
                 i2c->CMD = I2C_CMD_NACK;
+                i2c->CMD = I2C_CMD_STOP;
+            }
+
+            break;
+
+        case STOP:
+            i2c->IFC = I2C_IFC_MSTOP;
+            state = IDLE;
+
+        default:
+            break;
+        }
+    }
+    else {
+        switch (state) {
+        case IDLE:
+            /* Disable interrupt sources when done */
+            i2c->IEN = 0;
+
+            break;
+
+        case SEND_DATA_1:
+            if (i2c->IF & I2C_IF_NACK)
+            {
+                i2c->IFC = I2C_IFC_NACK;
                 i2c->CMD = I2C_CMD_STOP;
                 state = IDLE;
             }
-            else {
-                i2c->CMD = I2C_CMD_ACK;
+            else if (i2c->IF & I2C_IF_ACK) {
+                i2c->IFC = I2C_IFC_ACK;
+                i2c->TXDATA = send_register;
+                state = SEND_DATA_2;
             }
 
-            data[bytes_received] = i2c->RXDATA;
-            bytes_received++;
+            break;
+
+        case SEND_DATA_2:
+            if (i2c->IF & I2C_IF_NACK)
+            {
+                i2c->IFC = I2C_IFC_NACK;
+                i2c->CMD = I2C_CMD_STOP;
+                state = STOP;
+            }
+            else if (i2c->IF & I2C_IF_ACK) {
+                i2c->IFC = I2C_IFC_ACK;
+
+                /* We have to write START cmd first since repeated start, otherwise */
+                /* data would be sent first. */
+                i2c->CMD = I2C_CMD_START;
+                i2c->TXDATA = (send_address << 1) | READ;
+
+                state = SEND_DATA_3;
+            }
+
+            break;
+
+        case SEND_DATA_3:
+            if (i2c->IF & I2C_IF_NACK)
+            {
+                state = IDLE;
+                i2c->IFC = I2C_IFC_NACK;
+                i2c->CMD = I2C_CMD_STOP;
+            }
+            else if (i2c->IF & I2C_IF_ACK)
+            {
+                i2c->IFC = I2C_IFC_ACK;
+                state = RECEIVE_DATA;
+            }
+
+            break;
+
+        case RECEIVE_DATA:
+            if (i2c->IF & I2C_IF_RXDATAV) {
+                data = i2c->RXDATA;
+
+                /* If there is only one byte to receive we need to transmit the
+                NACK now, before the stop. */
+                i2c->CMD = I2C_CMD_NACK;
+                i2c->CMD = I2C_CMD_STOP;
+                
+                state = IDLE;
+            }
+
+            break;
+
+        case STOP:
+            i2c->IFC = I2C_IFC_MSTOP;
+            state = IDLE;
+
+            break;
+
+        default:
+            break;
         }
-
-        // Clear all interrupts
-        i2c->IFC = _I2C_IFC_MASK;
-
-        break;
-    
-    case ERROR:
-        while(1);
-        break;
-
-    default:
-        break;
     }
-
-    return;
-
-    error:
-    while(1);
 }
 
-int I2C_MyRead(I2C_TypeDef *i2c, uint8_t address, uint8_t reg) {
-    if ((i2c->STATE & _I2C_STATE_STATE_MASK) != I2C_STATE_STATE_IDLE) {
-        return -1;
-    }
+uint8_t I2C_MyRead(I2C_TypeDef* i2c, uint8_t address, uint8_t reg) {
+    i2c->CMD = I2C_CMD_STOP;
+    
+    general_operation = GENERAL_READ;
+    state = IDLE;
 
     send_address = address;
     send_register = reg;
 
-    // Clears data register
-    for(int i = 0; i < sizeof(data)/sizeof(uint8_t); i++) {
-        data[i] = 0;
+    // Clears data variable
+    data = 0;
+
+
+    /* Check if in busy state. Since this SW assumes single master, we can */
+    /* just issue an abort. The BUSY state is normal after a reset. */
+    if (i2c->STATE & I2C_STATE_BUSY)
+    {
+        i2c->CMD = I2C_CMD_ABORT;
     }
 
-    bytes_sent = 0;
-    bytes_received = 0;
+    /* Ensure buffers are empty */
+    i2c->CMD = I2C_CMD_CLEARPC | I2C_CMD_CLEARTX;
+    if (i2c->IF & I2C_IF_RXDATAV)
+    {
+        (void)i2c->RXDATA;
+    }
 
-    // Enable interrupts
-    i2c->IEN |= I2C_IEN_START | I2C_IEN_ACK | I2C_IEN_TXBL | I2C_IEN_NACK | I2C_IEN_RXDATAV;
+    /* Enable those interrupts we are interested in throughout transfer. */
+    /* Notice that the I2C interrupt must also be enabled in the NVIC, but */
+    /* that is left for an additional driver wrapper. */
+    // i2c->IEN |= I2C_IEN_ACK | I2C_IEN_TXBL | I2C_IEN_NACK | I2C_IEN_RXDATAV;
+    // Disables all interrupts
+    i2c->IEN = 0;
+    i2c->IEN |= I2C_IF_NACK | I2C_IF_ACK | I2C_IF_RXDATAV;
 
+    state = SEND_DATA_1;
+
+    /* Clear all pending interrupts prior to starting transfer. */
+    i2c->IFC = _I2C_IFC_MASK;
+
+    // Starts comunication
+    /* Data not transmitted until START sent */
     i2c->CMD = I2C_CMD_START;
-    
     i2c->TXDATA = (address << 1) | WRITE;
 
-    state = SEND_DATA;
+    while (state != IDLE) {
+        if(i2c->STATE == 0) {
+            return I2C_MyRead(i2c, address, reg);
+        }
+    }
 
-    while (state != IDLE);
+    // Disable interrupts
+    i2c->IEN = 0;
+
+    /* Clear all pending interrupts prior to starting transfer. */
+    i2c->IFC = _I2C_IFC_MASK;
+
+    return data;
+}
+
+int I2C_MyWrite(I2C_TypeDef* i2c, uint8_t address, uint8_t reg, uint8_t value) {
+    i2c->CMD = I2C_CMD_STOP;
+
+    general_operation = GENERAL_WRITE;
+    state = IDLE;
+
+    send_address = address;
+    send_register = reg;
+    value_to_write = value;
+
+    /* Check if in busy state. Since this SW assumes single master, we can */
+    /* just issue an abort. The BUSY state is normal after a reset. */
+    if (i2c->STATE & I2C_STATE_BUSY)
+    {
+        i2c->CMD = I2C_CMD_ABORT;
+    }
+
+    /* Ensure buffers are empty */
+    i2c->CMD = I2C_CMD_CLEARPC | I2C_CMD_CLEARTX;
+    if (i2c->IF & I2C_IF_RXDATAV)
+    {
+        (void)i2c->RXDATA;
+    }
+
+
+    // Enable interrupts
+    i2c->IEN = 0;
+    i2c->IEN |= I2C_IEN_ACK;
+
+    state = SEND_DATA_1;
+
+    i2c->CMD = I2C_CMD_START;
+    i2c->TXDATA = (address << 1) | WRITE;
+
+    while (state != IDLE) {
+        if(i2c->STATE == 0) {
+            return I2C_MyWrite(i2c, address, reg, value);
+        }
+    }
+
+    // Disable interrupts
+    i2c->IEN = 0;
+
+    /* Clear all pending interrupts prior to starting transfer. */
+    i2c->IFC = _I2C_IFC_MASK;
 
     return 0;
 }
@@ -162,14 +315,14 @@ int I2C_MyRead(I2C_TypeDef *i2c, uint8_t address, uint8_t reg) {
 #define I2C_OUTPUT_BUFFER_SIZE (20)
 #endif
 
-/**
- * @brief   Structure to store transfer information
- *
- * @note    The two additional bytes in the buffers are due to the I2C addresses.
- *          A retry option is planned when an error occurs.
- */
+ /**
+  * @brief   Structure to store transfer information
+  *
+  * @note    The two additional bytes in the buffers are due to the I2C addresses.
+  *          A retry option is planned when an error occurs.
+  */
 
-///@{
+  ///@{
 typedef enum {
     STATE_IDLE,
     STATE_ERROR,
@@ -201,10 +354,10 @@ typedef enum {
 } Status_t;
 
 typedef struct {
-    uint8_t *inpointer;
-    uint8_t *outpointer;
-    uint8_t *inlimit;
-    uint8_t *outlimit;
+    uint8_t* inpointer;
+    uint8_t* outpointer;
+    uint8_t* inlimit;
+    uint8_t* outlimit;
     uint16_t insize;
     uint16_t outsize;
     uint8_t inbuffer[I2C_INPUT_BUFFER_SIZE + 2];
@@ -221,8 +374,8 @@ typedef struct {
  *
  * @note  a KISS (Keep it simple) approach
  */
-static void Copy(uint8_t *dest, uint8_t *source, uint16_t count) {
-    const uint8_t *lim = dest + count;
+static void Copy(uint8_t* dest, uint8_t* source, uint16_t count) {
+    const uint8_t* lim = dest + count;
 
     while (dest < lim) {
         *dest++ = *source++;
@@ -238,7 +391,7 @@ static void Copy(uint8_t *dest, uint8_t *source, uint16_t count) {
  *
  * @note    The first address byte for a 10-bit address is 11110XX. The
  */
-static int DecomposeAddress(uint16_t address, uint8_t *pa) {
+static int DecomposeAddress(uint16_t address, uint8_t* pa) {
 
     if (address <= 0x77) {
         *pa = (uint8_t)address;
@@ -261,7 +414,7 @@ static int DecomposeAddress(uint16_t address, uint8_t *pa) {
 static TransferInfo transferinfo[2];
 
 /* Forward definition of ProcessInterrupt routine */
-static void ProcessInterrupt(I2C_TypeDef *i2c, TransferInfo *ti);
+static void ProcessInterrupt(I2C_TypeDef* i2c, TransferInfo* ti);
 
 /** Interrupt Handlers */
 ///@{
@@ -280,48 +433,35 @@ void I2C1_IRQHandler(void) {
  * @note    Another possibility is to use an I2C* field as a key to find the corresponding
  *          structure.
  */
-TransferInfo *GetTransferInfo(I2C_TypeDef *unit) {
-
+TransferInfo* GetTransferInfo(I2C_TypeDef* unit) {
     if (unit == I2C0) {
         return &transferinfo[0];
-    } else if (unit == I2C1) {
+    }
+    else if (unit == I2C1) {
         return &transferinfo[1];
-    } else {
+    }
+    else {
         return 0;
     }
 }
-
-// STATE_IDLE,
-// STATE_TX_SENDDATA,
-// STATE_RX_SENDADDR,
-// STATE_RX_RECEIVEDATA,
-// STATE_TXRX_SENDADDR,
-// STATE_TXRX_SENDDATA,
-// STATE_TXRX_RECEIVEDATA,
-
-// STATE_IDLE,
-// STATE_TX_SENDDATA,
-// STATE_RX_RECEIVEDATA,
-// STATE_TXRX_SENDDATA,
-// STATE_TXRX_RECEIVEDATA,
 
 /**
  * @brief   ProcessInterrupt
  * @note    Common routine for processing interrupt from I2C
  */
 static void
-ProcessInterrupt(I2C_TypeDef *i2c, TransferInfo *ti) {
+ProcessInterrupt(I2C_TypeDef* i2c, TransferInfo* ti) {
 
     // Process interrupt according state
     switch (ti->state) {
 
-    // Nothing to do. Just clear interrupts
+        // Nothing to do. Just clear interrupts
     case STATE_IDLE:
         i2c->IFC = _I2C_IFC_MASK; // Clear all interrupts
         break;
 
-    // Pode desaparecer
-    // Nothing to do. Just clear interrupts
+        // Pode desaparecer
+        // Nothing to do. Just clear interrupts
     case STATE_ERROR:
 
         // Clear all interrupts
@@ -329,7 +469,7 @@ ProcessInterrupt(I2C_TypeDef *i2c, TransferInfo *ti) {
 
         break;
 
-    // Transmitting data
+        // Transmitting data
     case STATE_TX_SENDDATA:
         if (i2c->IF & I2C_IF_NACK) {
             ti->state = STATE_ERROR;
@@ -361,7 +501,7 @@ ProcessInterrupt(I2C_TypeDef *i2c, TransferInfo *ti) {
 
         break;
 
-    // Receiving data
+        // Receiving data
     case STATE_RX_SENDADDR1:
         if (i2c->IF & I2C_IF_NACK) {
 
@@ -378,7 +518,8 @@ ProcessInterrupt(I2C_TypeDef *i2c, TransferInfo *ti) {
             if (ti->addressbytes == 2) {
                 i2c->TXDATA = *(ti->inpointer++);
                 ti->state = STATE_RX_SENDADDR2;
-            } else {
+            }
+            else {
                 i2c->CMD = I2C_CMD_START; // Repeated start
                 ti->state = STATE_RX_RECEIVEDATA;
             }
@@ -394,7 +535,6 @@ ProcessInterrupt(I2C_TypeDef *i2c, TransferInfo *ti) {
         if (i2c->IF & I2C_IF_ACK) {
             // Repeated start
             i2c->CMD = I2C_CMD_START;
-
             ti->state = STATE_RX_RECEIVEDATA;
         }
         break;
@@ -429,7 +569,7 @@ ProcessInterrupt(I2C_TypeDef *i2c, TransferInfo *ti) {
         // TODO
         break;
 
-    // Sending and then receiving data
+        // Sending and then receiving data
     case STATE_TXRX_SENDADDR1:
 
         // TODO
@@ -471,7 +611,7 @@ ProcessInterrupt(I2C_TypeDef *i2c, TransferInfo *ti) {
 /**
  * @brief   Initialize TransferInfo
  */
-static void TransferInfoInit(TransferInfo *ti, uint16_t isize, uint16_t osize) {
+static void TransferInfoInit(TransferInfo* ti, uint16_t isize, uint16_t osize) {
 
     ti->inpointer = ti->inbuffer;
     ti->outpointer = ti->outbuffer;
@@ -490,8 +630,8 @@ static void TransferInfoInit(TransferInfo *ti, uint16_t isize, uint16_t osize) {
  *
  * @note
  */
-int I2CMaster_Clear(I2C_TypeDef *i2c) {
-    TransferInfo *ti;
+int I2CMaster_Clear(I2C_TypeDef* i2c) {
+    TransferInfo* ti;
 
     ti = GetTransferInfo(i2c);
     if (ti == 0) {
@@ -510,8 +650,8 @@ int I2CMaster_Clear(I2C_TypeDef *i2c) {
 /**
  * @brief   Get status from I2C transfer
  */
-inline int I2CMaster_Status(I2C_TypeDef *i2c) {
-    TransferInfo *ti;
+inline int I2CMaster_Status(I2C_TypeDef* i2c) {
+    TransferInfo* ti;
 
     ti = GetTransferInfo(i2c);
     if (ti == 0) {
@@ -524,8 +664,8 @@ inline int I2CMaster_Status(I2C_TypeDef *i2c) {
 /**
  * @brief   Get state from I2C transfer
  */
-inline int I2CMaster_State(I2C_TypeDef *i2c) {
-    TransferInfo *ti;
+inline int I2CMaster_State(I2C_TypeDef* i2c) {
+    TransferInfo* ti;
 
     ti = GetTransferInfo(i2c);
     if (ti == 0) {
@@ -542,12 +682,14 @@ inline int I2CMaster_State(I2C_TypeDef *i2c) {
  *
  * @return 0: OK. Negative: Error
  */
-static int I2CMaster_EnableClock(I2C_TypeDef *i2c) {
+static int I2CMaster_EnableClock(I2C_TypeDef* i2c) {
     if (i2c == I2C0) {
         CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_I2C0;
-    } else if (i2c == I2C1) {
+    }
+    else if (i2c == I2C1) {
         CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_I2C1;
-    } else {
+    }
+    else {
         return -1;
     }
 
@@ -570,14 +712,13 @@ static int I2CMaster_EnableClock(I2C_TypeDef *i2c) {
  * | I2C1_SDA   | PC4 | PB11| PE0 |     |     |     |     | I2C1 Serial Data input / output        |
  *
  */
-int I2CMaster_Init(I2C_TypeDef *i2c, uint32_t speed, uint8_t loc) {
+int I2CMaster_Init(I2C_TypeDef* i2c, uint32_t speed, uint8_t loc) {
 
     // Enable clock for I2C peripheral
     I2CMaster_EnableClock(i2c);
 
     /* Enable I2C_TypeDef peripheral */
     i2c->CTRL |= I2C_CTRL_EN;
-
 
     /* Configure speed for present clock frequency */
     I2CMaster_ConfigureSpeed(i2c, speed);
@@ -589,11 +730,13 @@ int I2CMaster_Init(I2C_TypeDef *i2c, uint32_t speed, uint8_t loc) {
 
     /* Configure as master */
     i2c->CTRL &= ~I2C_CTRL_SLAVE;
+    i2c->CTRL |= I2C_CTRL_ARBDIS;
 
     /* Additional configuration */
     i2c->CTRL |= I2C_CTRL_AUTOSN;  /* Automatic STOP on NACK (Master only) */
     i2c->CTRL |= I2C_CTRL_AUTOACK; /* Automatic STOP on NACK (Master only) */
-    
+
+    i2c->IEN = 0;
     i2c->IFC = _I2C_IFC_MASK;
 
     // Enable interrupts on NVIC
@@ -610,9 +753,9 @@ int I2CMaster_Init(I2C_TypeDef *i2c, uint32_t speed, uint8_t loc) {
  *
  * @note    Data should not be changed until transmission ends
  */
-int I2CMaster_SendStart(I2C_TypeDef *i2c, uint16_t address, uint8_t *data, uint32_t size) {
+int I2CMaster_SendStart(I2C_TypeDef* i2c, uint16_t address, uint8_t* data, uint32_t size) {
     int nab; // number of address bytes
-    TransferInfo *ti;
+    TransferInfo* ti;
 
     // Test state from
     if ((i2c->STATE & _I2C_STATE_STATE_MASK) != I2C_STATE_STATE_IDLE)
@@ -657,9 +800,9 @@ int I2CMaster_SendStart(I2C_TypeDef *i2c, uint16_t address, uint8_t *data, uint3
  *
  * @note
  */
-int I2CMaster_Send(I2C_TypeDef *i2c, uint16_t address, uint8_t *data, uint32_t size) {
+int I2CMaster_Send(I2C_TypeDef* i2c, uint16_t address, uint8_t* data, uint32_t size) {
     int rc;
-    TransferInfo *ti;
+    TransferInfo* ti;
 
     ti = GetTransferInfo(i2c);
 
@@ -676,8 +819,8 @@ int I2CMaster_Send(I2C_TypeDef *i2c, uint16_t address, uint8_t *data, uint32_t s
  *
  * @note
  */
-int I2CMaster_SendGetStatus(I2C_TypeDef *i2c) {
-    TransferInfo *ti;
+int I2CMaster_SendGetStatus(I2C_TypeDef* i2c) {
+    TransferInfo* ti;
 
     // Test state from TransferInfo
     ti = GetTransferInfo(i2c);
@@ -690,9 +833,9 @@ int I2CMaster_SendGetStatus(I2C_TypeDef *i2c) {
  *
  * @note
  */
-int I2CMaster_ReceiveStart(I2C_TypeDef *i2c, uint16_t address, uint32_t size) {
+int I2CMaster_ReceiveStart(I2C_TypeDef* i2c, uint16_t address, uint32_t size) {
     int nab; // number of address bytes
-    TransferInfo *ti;
+    TransferInfo* ti;
 
     // Test state from
     if ((i2c->STATE & _I2C_STATE_STATE_MASK) != I2C_STATE_STATE_IDLE)
@@ -735,25 +878,25 @@ int I2CMaster_ReceiveStart(I2C_TypeDef *i2c, uint16_t address, uint32_t size) {
  * @note
  */
 
-/**
- * @brief   Configure I2C unit according to the actual clock
- *
- * @note    f_SCL  = 1/(T_low+T_high)
- *
- * @note    The formulas below does not work for N less than 3
- *
- *          T_high = (N_high x (CLKDIV+1))/f_HFPERCLK
- *          T_low  = (N_low x (CLKDIV+1))/f_HFPERCLK
- *
- * @note
- *          Clock Low/High Ratio
- *
- *          STANDARD                      4:4
- *          ASYMMETRIC                    6:3
- *          FAST                         11:6
- *
- */
-int I2CMaster_ConfigureSpeed(I2C_TypeDef *i2c, uint32_t speed) {
+ /**
+  * @brief   Configure I2C unit according to the actual clock
+  *
+  * @note    f_SCL  = 1/(T_low+T_high)
+  *
+  * @note    The formulas below does not work for N less than 3
+  *
+  *          T_high = (N_high x (CLKDIV+1))/f_HFPERCLK
+  *          T_low  = (N_low x (CLKDIV+1))/f_HFPERCLK
+  *
+  * @note
+  *          Clock Low/High Ratio
+  *
+  *          STANDARD                      4:4
+  *          ASYMMETRIC                    6:3
+  *          FAST                         11:6
+  *
+  */
+int I2CMaster_ConfigureSpeed(I2C_TypeDef* i2c, uint32_t speed) {
     uint32_t div;
     uint32_t perclk;
     unsigned t2, th, tl;
@@ -778,14 +921,14 @@ int I2CMaster_ConfigureSpeed(I2C_TypeDef *i2c, uint32_t speed) {
     // nh = 0;
     // nl = 0;
 
-    i2c->CLKDIV = 200;
+    i2c->CLKDIV = 500;
 
     return 0;
 }
 
-int I2CMaster_Read(I2C_TypeDef *i2c, uint8_t address, uint8_t reg) {
+int I2CMaster_Read(I2C_TypeDef* i2c, uint8_t address, uint8_t reg) {
     int nab; // number of address bytes
-    TransferInfo *ti;
+    TransferInfo* ti;
 
     // Test state from
     if ((i2c->STATE & _I2C_STATE_STATE_MASK) != I2C_STATE_STATE_IDLE)

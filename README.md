@@ -6,9 +6,9 @@ Trabalho desenvolvido para a disciplina de Sistemas Embarcados II do curso de ba
 
 # Comando
 
-unset PYTHONHOME && unset PYTHONPATH && export PYTHONHOME=$(pyenv root)/versions/3.8.19
-
 JLinkGDBServer -device EFM32GG990F1024 -if SWD -speed 4000
+
+unset PYTHONHOME && unset PYTHONPATH && export PYTHONHOME=$(pyenv root)/versions/3.8.19
 
 ## Esquemático
 
