@@ -16,7 +16,6 @@
 
 #include "../include/gpio.h"
 #include "../include/i2cmaster.h"
-#include "../include/led.h"
 #include "../include/clock_efm32gg2.h"
 #include "../include/utils.h"
 #include "../include/button.h"
@@ -29,9 +28,7 @@
 volatile uint32_t TickCounter = 0;
 
 static uint32_t steps_taken = 0;
-
-static uint32_t cool_value = 0;
-static char count_string[MAX_INT_STR_SIZE] = "0";
+static char lcd_print_string[MAX_INT_STR_SIZE] = "0";
 
 #define DELAYVAL 100
 
@@ -40,7 +37,7 @@ static char count_string[MAX_INT_STR_SIZE] = "0";
  *
  * @note   runs with disabled interrupts
  */
-void button_callback(uint32_t v) {
+void button_callback(uint32_t value) {
   steps_taken = 0;
 }
 
@@ -103,7 +100,7 @@ int main(void) {
   // uint8_t accel_zout_l = I2C_MyRead(I2C1, 0x68, 0x40);
 
 
-  LCD_WriteAlphanumericDisplay(count_string);
+  LCD_WriteAlphanumericDisplay(lcd_print_string);
 
   while (true) {
     // Enter low power state

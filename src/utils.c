@@ -57,7 +57,7 @@ int itoa(int n, char* str) {
  */
 
 void delay(uint32_t delay) {
-volatile uint32_t initialvalue = TickCounter;
+    volatile uint32_t initialvalue = TickCounter;
 
-    while( (TickCounter-initialvalue) < delay ) {}
+    while ((TickCounter - initialvalue) < delay);
 }
