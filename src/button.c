@@ -1,81 +1,112 @@
+/************************************************************************//**
+ * @file    button.c
+ * @brief   Button HAL for EFM32GG STK
+ * @version 1.0
+ *****************************************************************************/
+
+#include <stdint.h>
+ /*
+  * Including this file, it is possible to define which processor using command line
+  * E.g. -DEFM32GG995F1024
+  * The alternative is to include the processor specific file directly
+  * #include "efm32gg995f1024.h"
+  */
+#include "em_device.h"
+
 #include "../include/button.h"
 
-#include "../include/gpio.h"
-
+#ifndef BUTTON_INT_LEVEL
 #define BUTTON_INT_LEVEL 3
+#endif
 
-static uint32_t last_read = 0;
-static uint32_t newest_read = 0;
-static uint32_t input_pins = 0;
-static void (*callback)(uint32_t param) = NULL;
+  // Constant to access GPIO Port B where buttons are connected
+static GPIO_P_TypeDef* const GPIOB = &(GPIO->P[1]);    // GPIOB
 
+/**
+ * @brief   global variables for button states and configuration
+ */
+ //{
+static uint32_t lastread = 0;
+static uint32_t newestread = 0;
+static uint32_t inputpins = 0;
+static void   (*callback)(uint32_t) = 0;
+//}
+
+/**
+ * @brief GPIO IRQ Handler (only even pins)
+ */
 void GPIO_EVEN_IRQHandler(void) {
-    uint32_t new_read;
-
-    const uint32_t mask = BUTTON2;
+    uint32_t newread;
+    const uint32_t mask = BIT(10);
 
     if (GPIO->IF & mask) {
-        last_read = (last_read & ~mask) | (newest_read & mask);
-        new_read = GPIOB->DIN & mask;
-        newest_read = (newest_read & ~mask) | new_read;
+        lastread = (lastread & ~mask) | (newestread & mask);
+        newread = GPIOB->DIN & mask;
+        newestread = (newestread & ~mask) | newread;
     }
+    GPIO->IFC = 0x5555;         // Clear all interrupts from even pins
 
-    GPIO->IFC = 0x5555;
-
-    if (callback) {
-        callback(mask);
-    }
+    if (callback) callback(mask);
 }
 
+/**
+ * @brief GPIO IRQ Handler (only odd pins)
+ */
 void GPIO_ODD_IRQHandler(void) {
-    uint32_t new_read;
-
-    const uint32_t mask = BUTTON1;
+    uint32_t newread;
+    const uint32_t mask = BIT(9);
 
     if (GPIO->IF & mask) {
-        last_read = (last_read & ~mask) | (newest_read & mask);
-        new_read = GPIOB->DIN & mask;
-        newest_read = (newest_read & ~mask) | new_read;
+        lastread = (lastread & ~mask) | (newestread & mask);
+        newread = GPIOB->DIN & mask;
+        newestread = (newestread & ~mask) | newread;
     }
+    GPIO->IFC = 0xAAAA;         // Clear all interrupts from odd pins
 
-    GPIO->IFC = 0xAAAA;
-
-    if (callback) {
-        callback(mask);
-    }
+    if (callback) callback(mask);
 }
 
+/**
+ * @brief Button initialization routine
+ */
 void Button_Init(uint32_t buttons) {
-    if (buttons & BUTTON1) {
-        GPIOB->MODEH &= ~_GPIO_P_MODEL_MODE1_MASK;
-        GPIOB->MODEH |= GPIO_P_MODEL_MODE1_INPUT;
-        input_pins |= BUTTON1;
 
-        GPIO->EXTIPSELH =
-            (GPIO->EXTIPSELH & ~(_GPIO_EXTIPSELH_EXTIPSEL9_MASK)) |
-            GPIO_EXTIPSELH_EXTIPSEL9_PORTB;
-        GPIO->EXTIRISE |= BUTTON1;
-        GPIO->EXTIFALL |= BUTTON1;
-        GPIO->IEN |= BUTTON1;
+    /* Enable Clock for GPIO */
+    CMU->HFPERCLKDIV |= CMU_HFPERCLKDIV_HFPERCLKEN;     // Enable HFPERCLK
+    CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_GPIO;           // Enable HFPERCKL for GPIO
+
+    if (buttons & BUTTON1) {
+        GPIOB->MODEH &= ~(_GPIO_P_MODEH_MODE9_MASK);    // Clear bits
+        GPIOB->MODEH |= GPIO_P_MODEH_MODE9_INPUT;       // Set bits
+        inputpins |= BUTTON1;
+        /* Interrupt */
+
+        GPIO->EXTIPSELH = (GPIO->EXTIPSELH & ~(_GPIO_EXTIPSELH_EXTIPSEL9_MASK))
+            | GPIO_EXTIPSELH_EXTIPSEL9_PORTB;
+        GPIO->EXTIRISE |= BIT(9);
+        GPIO->EXTIFALL |= BIT(9);
+        GPIO->IEN |= BIT(9);
+
     }
 
     if (buttons & BUTTON2) {
-        GPIOB->MODEH &= ~_GPIO_P_MODEL_MODE2_MASK;
-        GPIOB->MODEH |= GPIO_P_MODEL_MODE2_INPUT;
-        input_pins |= BUTTON2;
-
-        GPIO->EXTIPSELH =
-            (GPIO->EXTIPSELH & ~(_GPIO_EXTIPSELH_EXTIPSEL10_MASK)) |
-            GPIO_EXTIPSELH_EXTIPSEL10_PORTB;
-        GPIO->EXTIRISE |= BUTTON2;
-        GPIO->EXTIFALL |= BUTTON2;
-        GPIO->IEN |= BUTTON2;
+        GPIOB->MODEH &= ~(_GPIO_P_MODEH_MODE10_MASK);    // Clear bits
+        GPIOB->MODEH |= GPIO_P_MODEH_MODE10_INPUT;       // Set bits
+        inputpins |= BUTTON2;
+        /* Interrupt */
+        GPIO->EXTIPSELH = (GPIO->EXTIPSELH & ~(_GPIO_EXTIPSELH_EXTIPSEL10_MASK))
+            | GPIO_EXTIPSELH_EXTIPSEL10_PORTB;
+        GPIO->EXTIRISE |= BIT(10);
+        GPIO->EXTIFALL |= BIT(10);
+        GPIO->IEN |= BIT(10);
     }
+    // First read
+    lastread = GPIOB->DIN & inputpins;
 
-    last_read = GPIOB->DIN & input_pins;
-
+    // Clear all interrupts from GPIO
     GPIO->IFC = 0xFFFF;
 
+    /* Enable interrupts */
     NVIC_SetPriority(GPIO_EVEN_IRQn, BUTTON_INT_LEVEL);
     NVIC_ClearPendingIRQ(GPIO_EVEN_IRQn);
     NVIC_EnableIRQ(GPIO_EVEN_IRQn);
@@ -85,27 +116,66 @@ void Button_Init(uint32_t buttons) {
     NVIC_EnableIRQ(GPIO_ODD_IRQn);
 }
 
-uint32_t Button_Read(void) { return newest_read & input_pins; }
+/**
+ * @brief Returns the last status of buttons
+ *
+ * @note  Only pins configured as buttons are returned. The others are masked.
+ */
+uint32_t Button_Read(void) {
 
+    return newestread & inputpins;
+}
+
+
+/**
+ * @brief Returns the buttons whose status are changed
+ *
+ * @note  Only pins configured as buttons are returned. The others are masked.
+ */
 uint32_t Button_ReadChanges(void) {
-    uint32_t changes = newest_read ^ last_read;
-    last_read = newest_read;
+    uint32_t changes;
 
-    return changes & input_pins;
+    changes = newestread ^ lastread;
+    lastread = newestread;
+
+    return changes & inputpins;
 }
 
-uint32_t Button_ReadPressed(void) {
-    uint32_t changes = ~newest_read & last_read;
-    last_read = newest_read;
 
-    return changes & input_pins;
-}
-
+/**
+ * @brief Returns the buttons, which were released
+ *
+ * @note  Only pins configured as buttons are returned. The others are masked.
+ */
 uint32_t Button_ReadReleased(void) {
-    uint32_t changes = newest_read & ~last_read;
-    last_read = newest_read;
+    uint32_t changes;
 
-    return changes & input_pins;
+    changes = newestread & ~lastread;
+    lastread = newestread;
+
+    return changes & inputpins;
 }
 
-void Button_SetCallback(void (*proc)(uint32_t param)) { callback = proc; }
+/**
+ * @brief Returns the buttons, which were pressed
+ *
+ * @note  Only pins configured as buttons are returned. The others are masked.
+ */
+uint32_t Button_ReadPressed(void) {
+    uint32_t changes;
+
+    changes = ~newestread & lastread;
+    lastread = newestread;
+
+    return changes & inputpins;
+}
+
+
+/**
+ * @brief Set Callback routine
+ */
+void Button_SetCallback(void (*proc)(uint32_t parm)) {
+
+    callback = proc;
+
+}

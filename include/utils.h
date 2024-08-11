@@ -1,5 +1,4 @@
-#pragma once
+#define MAX_INT_STR_SIZE 12 // 10 digits + sign + null terminator
 
-void reverse(char str[], int length);
-char* itoa(int num, char* str, int base);
+int itoa(int n, char* str);
 void delay(unsigned n);
