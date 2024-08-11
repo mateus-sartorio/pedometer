@@ -1,5 +1,4 @@
 #include "../include/led.h"
-
 #include "../include/gpio.h"
 
 void LED_Init(uint32_t leds) {

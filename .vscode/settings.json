@@ -18,6 +18,8 @@
         "efm32gg990f1024.h": "c",
         "efm32gg_i2c.h": "c",
         "efm32gg_gpio_p.h": "c",
-        "button.h": "c"
+        "button.h": "c",
+        "i2cmaster.h": "c",
+        "utils.h": "c"
     }
 }

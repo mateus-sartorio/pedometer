@@ -5,6 +5,7 @@
  ******************************************************************************/
 
 #include <stdint.h>
+#include <stdbool.h>
  /*
   * Including this file, it is possible to define which processor using command line
   * E.g. -DEFM32GG995F1024
@@ -21,37 +22,26 @@
 #include "../include/button.h"
 #include "../include/lcd.h"
 
-static uint32_t steps_taken = 0;
+  /**
+   * @brief Tick counter
+   * @note  Incremented every 1 ms
+   */
+volatile uint32_t TickCounter = 0;
 
-/************************************************************************//**
- * @brief  Button callback
- *
- * @note   runs with disabled interrupts
- */
+static uint32_t steps_taken = 0;
 
 static uint32_t cool_value = 0;
 static char count_string[MAX_INT_STR_SIZE] = "0";
 
 #define DELAYVAL 100
 
-void Delay(uint32_t delay) {
-  volatile uint32_t counter;
-  int i;
-
-  for (i = 0;i < delay;i++) {
-    counter = 10000;
-    while (counter) counter--;
-  }
-}
-
+/************************************************************************//**
+ * @brief  Button callback
+ *
+ * @note   runs with disabled interrupts
+ */
 void button_callback(uint32_t v) {
-  // cool_value++;
-  // itoa(cool_value, count_string);
-  // LCD_WriteAlphanumericDisplay(count_string);
-
   steps_taken = 0;
-  itoa(cool_value, count_string);
-  LCD_WriteAlphanumericDisplay(count_string);
 }
 
 /*************************************************************************//**
@@ -59,18 +49,14 @@ void button_callback(uint32_t v) {
 */
 const int TickDivisor = 1000; // milliseconds
 
-void SysTick_Handler(void) {
-  static int count = 1000;
+/**
+ * @brief  SysTick interrupt handler
+ *
+ * @note   Called every 1/DIVIDER seconds (1 ms)
+ */
 
-  if (count == 0) {
-    cool_value++;
-    itoa(cool_value, count_string);
-    LCD_WriteAlphanumericDisplay(count_string);
-    count = 1000;
-  }
-  else {
-    count--;
-  }
+void SysTick_Handler(void) {
+  TickCounter++;
 }
 
 int main(void) {
@@ -83,17 +69,21 @@ int main(void) {
   Button_Init(BUTTON1 | BUTTON2);
   Button_SetCallback(button_callback);
 
+  /* Enable interrupts */
+  __enable_irq();
+
+  /* Configure SysTick */
+  SysTick_Config(SystemCoreClock / TickDivisor);
+
   /* Configure LCD */
   LCD_Init();
 
   LCD_SetAll();
-  Delay(DELAYVAL);
+  delay(DELAYVAL);
 
   LCD_ClearAll();
-  Delay(DELAYVAL);
+  delay(DELAYVAL);
 
-  /* Enable interrupts */
-  __enable_irq();
 
   // I2CMaster_Init(I2C1, 100, 0);
 
@@ -101,6 +91,7 @@ int main(void) {
   // I2C_MyWrite(I2C1, 0x68, 0x1C, 0x00);
 
   // delay(1000);
+
   // uint8_t who_am_i = I2C_MyRead(I2C1, 0x68, 0x75);
   // uint8_t power = I2C_MyRead(I2C1, 0x68, 0x6B);
 
@@ -111,15 +102,11 @@ int main(void) {
   // uint8_t accel_zout_h = I2C_MyRead(I2C1, 0x68, 0x3F);
   // uint8_t accel_zout_l = I2C_MyRead(I2C1, 0x68, 0x40);
 
-  /* Configure SysTick */
-  SysTick_Config(SystemCoreClock / TickDivisor);
 
   LCD_WriteAlphanumericDisplay(count_string);
 
-  /*
-     * Read button loop: ATTENTION: No debounce
-     */
-  while (1) {
-    __WFI();        // Enter low power state
+  while (true) {
+    // Enter low power state
+    __WFI();
   }
 }

@@ -1,6 +1,9 @@
 #include "../include/utils.h"
 
 #include <stdio.h>
+#include <stdint.h>
+
+extern volatile uint32_t TickCounter;
 
 int itoa(int n, char* str) {
     if (str == NULL) return 1;
@@ -47,6 +50,14 @@ int itoa(int n, char* str) {
     return 0;
 }
 
-void delay(unsigned n) {
-    for (int i = 0; i < n; i++);
+/**
+ * @brief  Better delay function
+ *
+ * @param  delay is in ms
+ */
+
+void delay(uint32_t delay) {
+volatile uint32_t initialvalue = TickCounter;
+
+    while( (TickCounter-initialvalue) < delay ) {}
 }
