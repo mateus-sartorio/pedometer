@@ -20,6 +20,7 @@
         "efm32gg_gpio_p.h": "c",
         "button.h": "c",
         "i2cmaster.h": "c",
-        "utils.h": "c"
+        "utils.h": "c",
+        "vector.h": "c"
     }
 }

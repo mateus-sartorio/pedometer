@@ -20,6 +20,7 @@
 #include "../include/utils.h"
 #include "../include/button.h"
 #include "../include/lcd.h"
+#include "../include/vector.h"
 
   /**
    * @brief Tick counter
@@ -81,13 +82,14 @@ int main(void) {
   LCD_ClearAll();
   delay(DELAYVAL);
 
+  LCD_WriteAlphanumericDisplay(lcd_print_string);
 
-  // I2CMaster_Init(I2C1, 100, 0);
+  I2CMaster_Init(I2C1, 100, 0);
 
-  // I2C_MyWrite(I2C1, 0x68, 0x6B, 0x00);
-  // I2C_MyWrite(I2C1, 0x68, 0x1C, 0x00);
+  I2C_MyWrite(I2C1, 0x68, 0x6B, 0x00);
+  I2C_MyWrite(I2C1, 0x68, 0x1C, 0x00);
 
-  // delay(1000);
+  delay(1000);
 
   // uint8_t who_am_i = I2C_MyRead(I2C1, 0x68, 0x75);
   // uint8_t power = I2C_MyRead(I2C1, 0x68, 0x6B);
@@ -100,7 +102,6 @@ int main(void) {
   // uint8_t accel_zout_l = I2C_MyRead(I2C1, 0x68, 0x40);
 
 
-  LCD_WriteAlphanumericDisplay(lcd_print_string);
 
   while (true) {
     // Enter low power state
