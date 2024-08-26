@@ -2,6 +2,25 @@
     "files.associations": {
         "*.c": "c",
         "*.cs": "csharp",
-        "compare": "cpp"
+        "compare": "cpp",
+        "em_device.h": "c",
+        "stdint.h": "c",
+        "uart.h": "c",
+        "led.h": "c",
+        "cstdlib": "c",
+        "clock_efm32gg_ext.h": "c",
+        "efm32gg_gpio.h": "c",
+        "em_cmu.h": "c",
+        "em_gpio.h": "c",
+        "em_chip.h": "c",
+        "buffer.h": "c",
+        "clock_efm32gg2.h": "c",
+        "efm32gg990f1024.h": "c",
+        "efm32gg_i2c.h": "c",
+        "efm32gg_gpio_p.h": "c",
+        "button.h": "c",
+        "i2cmaster.h": "c",
+        "utils.h": "c",
+        "vector.h": "c"
     }
 }

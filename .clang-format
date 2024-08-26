@@ -1,0 +1,10 @@
+BasedOnStyle: Google
+BreakBeforeBraces: Attach
+AllowShortBlocksOnASingleLine: Always
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: All
+IndentWidth: 2
+ContinuationIndentWidth: 2
+TabWidth: 2
+UseTab: Never

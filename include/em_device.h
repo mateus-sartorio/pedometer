@@ -1,4 +1,5 @@
-/**************************************************************************//**
+/**************************************************************************/
+/**
  * @file em_device.h
  * @brief CMSIS Cortex-M Peripheral Access Layer for Silicon Laboratories
  *        microcontroller devices
