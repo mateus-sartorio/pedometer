@@ -61,3 +61,13 @@ void delay(uint32_t delay) {
 
     while ((TickCounter - initialvalue) < delay);
 }
+
+uint64_t array_sum(uint64_t* array, int size) {
+    uint64_t sum = 0;
+    
+    for(int i = 0; i < size; i++) {
+        sum += array[i];
+    }
+
+    return sum;
+}

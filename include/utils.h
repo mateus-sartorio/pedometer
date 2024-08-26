@@ -4,3 +4,4 @@
 
 int itoa(int n, char* str);
 void delay(uint32_t delay);
+uint64_t array_sum(uint64_t* array, int size);

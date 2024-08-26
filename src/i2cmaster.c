@@ -237,7 +237,7 @@ uint8_t I2C_MyRead(I2C_TypeDef* i2c, uint8_t address, uint8_t reg) {
     /* Data not transmitted until START sent */
     i2c->CMD = I2C_CMD_START;
     i2c->TXDATA = (address << 1) | WRITE;
-
+    
     while (state != IDLE) {
         if (i2c->STATE == 0) {
             return I2C_MyRead(i2c, address, reg);
