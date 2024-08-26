@@ -1,12 +1,3 @@
-/**
- * @file    i2cmaster.c
- * @brief   I2C HAL for EFM32GG
- * @version 1.0
- *
- * @note    It uses polling
- *
- */
-
 #include "../include/i2cmaster.h"
 #include "../include/clock_efm32gg2.h"
 #include "../include/em_device.h"

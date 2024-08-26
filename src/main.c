@@ -1,11 +1,3 @@
-/** ***************************************************************************
- * @file    main.c
- * @brief   Simple UART Demo for EFM32GG_STK3700
- * @version 1.0
- ******************************************************************************/
-
-#include <stdint.h>
-#include <stdbool.h>
  /*
   * Including this file, it is possible to define which processor using command line
   * E.g. -DEFM32GG995F1024
@@ -13,6 +5,9 @@
   * #include "efm32gg995f1024.h"
   */
 #include "../include/em_device.h"
+
+#include <stdint.h>
+#include <stdbool.h>
 
 #include "../include/gpio.h"
 #include "../include/i2cmaster.h"
