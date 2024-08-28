@@ -44,7 +44,7 @@ Below is the schematics of how the MPU 6050 sould be connected.
 <br/>
 
 
-## 🧠 What I learned with this project and this Embedded Systems course as a whole
+## 🧠 What I learned with this project and the Embedded Systems course as a whole
 
 - I learned about Hardware Abstraction Layers (HALs) and how it allows developers to create interfaces with varying levels of abstraction in embedded systems. I understood that higher levels of abstractions come as tradeoffs: that more abstraction in HALs can make development easier and more versatile for multiple microcontrollers, but may come at the cost of performance and more specialized knowledge of a specific board or development kit.
 
